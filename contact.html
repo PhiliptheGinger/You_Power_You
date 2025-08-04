@@ -1,47 +1,68 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contact - You Power You</title>
-  <link rel="stylesheet" href="css/style.css" />
-</head>
-<body>
-  <header>
-    <nav class="navbar">
-      <a href="index.html" class="logo">You Power You</a>
-      <ul class="nav-links">
-        <li><a href="index.html#savings">Savings</a></li>
-        <li><a href="index.html#freedom">Energy Freedom</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="contact.html">Contact</a></li>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact - You Power You</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <script defer src="js/main.js"></script>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar" role="navigation">
+        <a href="index.html" class="logo">You Power You</a>
+        <button
+          class="hamburger"
+          aria-label="Toggle navigation"
+          aria-controls="navigation"
+          aria-expanded="false"
+        >
+          ☰
+        </button>
+        <ul id="navigation" class="nav-links">
+          <li><a href="index.html#savings">Savings</a></li>
+          <li><a href="index.html#community">Community</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="qualify.html">Qualify</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="content">
+      <h1>Contact Us</h1>
+      <p>
+        Ready to start saving or looking for more information? Reach out and
+        we'll respond quickly.
+      </p>
+      <ul class="contact-info">
+        <li>
+          Email: <a href="mailto:info@youpoweryou.com">info@youpoweryou.com</a>
+        </li>
+        <li>Phone: <a href="tel:+13333333333">(333) 333-3333</a></li>
       </ul>
-    </nav>
-  </header>
+      <form class="contact-form" action="#" method="post">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required />
 
-  <main class="content">
-    <h1>Contact Us</h1>
-    <p>Ready to start saving or looking for more information? Reach out and we'll respond quickly.</p>
-    <ul class="contact-info">
-      <li>Email: <a href="mailto:info@youpoweryou.com">info@youpoweryou.com</a></li>
-      <li>Phone: <a href="tel:+13333333333">(333) 333-3333</a></li>
-    </ul>
-    <form class="contact-form" action="#" method="post">
-      <label for="name">Name</label>
-      <input type="text" id="name" name="name" required />
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required />
 
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" required />
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="5" required></textarea>
 
-      <label for="message">Message</label>
-      <textarea id="message" name="message" rows="5" required></textarea>
+        <button type="submit">Send</button>
+      </form>
+    </main>
 
-      <button type="submit">Send</button>
-    </form>
-  </main>
-
-  <footer>
-    <p>© 2024 You Power You. All rights reserved.</p>
-  </footer>
-</body>
+    <footer>
+      <p>© 2024 You Power You. All rights reserved.</p>
+    </footer>
+  </body>
 </html>

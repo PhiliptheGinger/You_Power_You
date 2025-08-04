@@ -1,5 +1,5 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Poppins", Arial, sans-serif;
   margin: 0;
   background: #f5f5f5;
   color: #333;
@@ -21,6 +21,15 @@ body {
   text-decoration: none;
 }
 
+.hamburger {
+  display: none;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: #fff;
+  font-family: "Poppins", Arial, sans-serif;
+}
+
 .nav-links {
   list-style: none;
   display: flex;
@@ -34,7 +43,8 @@ body {
 }
 
 .hero {
-  background: url('https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat;
+  background: url("https://images.unsplash.com/photo-1505685296765-3a2736de412f?auto=format&fit=crop&w=1400&q=80")
+    center/cover no-repeat;
   color: #fff;
   text-align: center;
   padding: 5rem 1rem;
@@ -64,25 +74,45 @@ body {
   background: #e3f2fd;
 }
 
+.infographic {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  margin-top: 1rem;
+}
+
 .content {
   padding: 2rem;
 }
 
-.contact-form {
+.contact-form,
+.qualify-form {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   max-width: 400px;
 }
 
+.qualify-form fieldset {
+  border: 1px solid #ccc;
+  padding: 1rem;
+}
+
+.qualify-form legend {
+  font-weight: 600;
+}
+
 .contact-form input,
-.contact-form textarea {
+.contact-form textarea,
+.qualify-form input,
+.qualify-form select {
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-.contact-form button {
+.contact-form button,
+.qualify-form button {
   background: #1e88e5;
   color: #fff;
   padding: 0.5rem 1rem;
@@ -96,4 +126,22 @@ footer {
   padding: 1rem;
   background: #1e88e5;
   color: #fff;
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    background: #1e88e5;
+    width: 100%;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .hamburger {
+    display: block;
+  }
 }
