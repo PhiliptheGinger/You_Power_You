@@ -1,2 +1,13 @@
-# You_Power_You
-A website for You Power You
+# You Power You
+
+Static website for promoting residential solar in Guilford County.
+
+## Structure
+- `index.html` – landing page with messaging about savings and energy freedom.
+- `about.html` – background on the project and partners.
+- `contact.html` – contact information and form.
+- `css/style.css` – site styling.
+- `js/main.js` – small script for the contact form.
+
+## Development
+Open `index.html` in a browser to view the site. No build step is required.
