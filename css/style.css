@@ -43,7 +43,9 @@ body {
 }
 
 .hero {
-  position: relative;
+  background: url("https://images.unsplash.com/photo-1605478900747-37c2d0ef6e1a?auto=format&fit=crop&w=1400&q=80")
+    center/cover no-repeat;
+  color: #fff;
   text-align: center;
   color: #fff;
 }
