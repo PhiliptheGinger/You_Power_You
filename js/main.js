@@ -22,11 +22,13 @@ if (form) {
     estimator.addEventListener("submit", (e) => {
       e.preventDefault();
       const bill = parseFloat(document.getElementById("bill").value);
-      if (!isNaN(bill)) {
-        const yearly = bill * 12 * 0.25;
+      const zip = document.getElementById("zip").value.trim();
+      if (!isNaN(bill) && zip) {
+        const monthly = bill * 0.25;
+        const yearly = monthly * 12;
         const result = document.getElementById("savings-result");
         if (result) {
-          result.textContent = `Estimated first-year savings: $${yearly.toFixed(0)}`;
+          result.textContent = `Homes in ${zip} could save about $${monthly.toFixed(0)} per month (~$${yearly.toFixed(0)} per year).`;
         }
       }
     });
@@ -54,9 +56,7 @@ if (form) {
 
     quiz.addEventListener("submit", (e) => {
       e.preventDefault();
-      alert("You're a great fit! Let's lock in your savings.");
-      quiz.reset();
-      showStep(0);
+      window.location.href = "thankyou.html";
     });
   }
 });
