@@ -40,7 +40,7 @@
     <main class="content">
       <section class="savings-estimator">
         <h2>Instant Solar Savings Estimator</h2>
-        <form class="estimator-form" action="#" method="post">
+        <form class="estimator-form" action="javascript:void(0);">
           <label for="bill">Average monthly electric bill (required)</label>
           <input type="number" id="bill" name="bill" required />
 
@@ -57,6 +57,7 @@
 
           <button type="submit">Calculate My Savings</button>
         </form>
+        <p id="savings-result"></p>
         <p>We respect your privacy. No spam. Just savings.</p>
       </section>
 
@@ -65,51 +66,65 @@
         The Greensboro Net Metering Program helps homeowners save more by
         feeding extra solar power back to the grid.
       </p>
-      <form class="qualify-form" action="#" method="post">
-        <fieldset>
+      <form class="qualify-form" action="javascript:void(0);">
+        <fieldset class="basic-info">
           <legend>Basic Information</legend>
 
-          <label for="homeowner">Are you a homeowner?</label>
-          <select id="homeowner" name="homeowner" required>
-            <option value="">Select</option>
-            <option>Yes</option>
-            <option>No</option>
-          </select>
+          <div class="form-group">
+            <label for="homeowner">Are you a homeowner?</label>
+            <select id="homeowner" name="homeowner" required>
+              <option value="">Select</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
 
-          <label for="taxes">Do you file federal taxes?</label>
-          <select id="taxes" name="taxes" required>
-            <option value="">Select</option>
-            <option>Yes</option>
-            <option>No</option>
-          </select>
+          <div class="form-group">
+            <label for="taxes">Do you file federal taxes?</label>
+            <select id="taxes" name="taxes" required>
+              <option value="">Select</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
 
-          <label for="credit">Is your credit score above 600?</label>
-          <select id="credit" name="credit" required>
-            <option value="">Select</option>
-            <option>Yes</option>
-            <option>No</option>
-          </select>
+          <div class="form-group">
+            <label for="credit">Is your credit score above 600?</label>
+            <select id="credit" name="credit" required>
+              <option value="">Select</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
 
-          <label for="roof">What type of roof do you have?</label>
-          <select id="roof" name="roof" required>
-            <option value="">Select</option>
-            <option>Slatted</option>
-            <option>Panels</option>
-            <option>Other</option>
-          </select>
+          <div class="form-group">
+            <label for="roof">What type of roof do you have?</label>
+            <select id="roof" name="roof" required>
+              <option value="">Select</option>
+              <option>Slatted</option>
+              <option>Panels</option>
+              <option>Other</option>
+            </select>
+          </div>
 
-          <label for="billname">Whose name is on the electric bill?</label>
-          <input id="billname" name="billname" type="text" required />
+          <div class="form-group">
+            <label for="billname">Whose name is on the electric bill?</label>
+            <input id="billname" name="billname" type="text" required />
+          </div>
 
-          <label for="usage">12-month usage statement (kWh)</label>
-          <input id="usage" name="usage" type="text" required />
+          <div class="form-group">
+            <label for="usage">12-month usage statement (kWh)</label>
+            <input id="usage" name="usage" type="text" required />
+          </div>
 
-          <label for="decision">Are all decision makers present?</label>
-          <select id="decision" name="decision" required>
-            <option value="">Select</option>
-            <option>Yes</option>
-            <option>No</option>
-          </select>
+          <div class="form-group">
+            <label for="decision">Are all decision makers present?</label>
+            <select id="decision" name="decision" required>
+              <option value="">Select</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
 
           <fieldset class="sub-group">
             <legend>Do you need roof or tree removal?</legend>
@@ -124,66 +139,68 @@
           </fieldset>
         </fieldset>
 
-        <fieldset>
+        <fieldset class="upgrades">
           <legend>Energy-Efficient Upgrades in the Last 12 Months</legend>
-          <label
-            ><input type="checkbox" name="upgrades" value="insulation" />
-            Insulation</label
-          >
-          <label
-            ><input type="checkbox" name="upgrades" value="windows" />
-            Windows</label
-          >
-          <label
-            ><input type="checkbox" name="upgrades" value="water heater" />
-            Water Heater</label
-          >
-          <label
-            ><input type="checkbox" name="upgrades" value="HVAC" /> HVAC</label
-          >
-          <label
-            ><input type="checkbox" name="upgrades" value="heat pump" /> Heat
-            Pump</label
-          >
-          <label
-            ><input type="checkbox" name="upgrades" value="pool" /> Pool</label
-          >
-          <label
-            ><input type="checkbox" name="upgrades" value="pool pump" /> Pool
-            Pump</label
-          >
-          <label
-            ><input type="checkbox" name="upgrades" value="smart thermostat" />
-            Smart Thermostat</label
-          >
-          <label
-            ><input type="checkbox" name="upgrades" value="washer" />
-            Washer</label
-          >
-          <label
-            ><input type="checkbox" name="upgrades" value="dryer" />
-            Dryer</label
-          >
-          <label
-            ><input type="checkbox" name="upgrades" value="fridge" />
-            Fridge</label
-          >
-          <label
-            ><input type="checkbox" name="upgrades" value="freezer" />
-            Freezer</label
-          >
-          <label
-            ><input type="checkbox" name="upgrades" value="led lights" /> LED
-            Lights</label
-          >
-          <label
-            ><input type="checkbox" name="upgrades" value="doors" />
-            Doors</label
-          >
-          <label
-            ><input type="checkbox" name="upgrades" value="other" />
-            Other</label
-          >
+          <div class="checkbox-grid">
+            <label
+              ><input type="checkbox" name="upgrades" value="insulation" />
+              Insulation</label
+            >
+            <label
+              ><input type="checkbox" name="upgrades" value="windows" />
+              Windows</label
+            >
+            <label
+              ><input type="checkbox" name="upgrades" value="water heater" />
+              Water Heater</label
+            >
+            <label
+              ><input type="checkbox" name="upgrades" value="HVAC" /> HVAC</label
+            >
+            <label
+              ><input type="checkbox" name="upgrades" value="heat pump" /> Heat
+              Pump</label
+            >
+            <label
+              ><input type="checkbox" name="upgrades" value="pool" /> Pool</label
+            >
+            <label
+              ><input type="checkbox" name="upgrades" value="pool pump" /> Pool
+              Pump</label
+            >
+            <label
+              ><input type="checkbox" name="upgrades" value="smart thermostat" />
+              Smart Thermostat</label
+            >
+            <label
+              ><input type="checkbox" name="upgrades" value="washer" />
+              Washer</label
+            >
+            <label
+              ><input type="checkbox" name="upgrades" value="dryer" />
+              Dryer</label
+            >
+            <label
+              ><input type="checkbox" name="upgrades" value="fridge" />
+              Fridge</label
+            >
+            <label
+              ><input type="checkbox" name="upgrades" value="freezer" />
+              Freezer</label
+            >
+            <label
+              ><input type="checkbox" name="upgrades" value="led lights" /> LED
+              Lights</label
+            >
+            <label
+              ><input type="checkbox" name="upgrades" value="doors" />
+              Doors</label
+            >
+            <label
+              ><input type="checkbox" name="upgrades" value="other" />
+              Other</label
+            >
+          </div>
         </fieldset>
 
         <button type="submit">Submit</button>
