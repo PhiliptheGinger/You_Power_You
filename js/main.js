@@ -17,4 +17,28 @@ document.addEventListener("DOMContentLoaded", () => {
       navLinks.classList.toggle("active");
     });
   }
+
+  const estimator = document.querySelector(".estimator-form");
+  if (estimator) {
+    estimator.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const bill = parseFloat(document.getElementById("bill").value);
+      if (!isNaN(bill)) {
+        const yearly = bill * 12 * 0.25;
+        const result = document.getElementById("savings-result");
+        if (result) {
+          result.textContent = `Estimated first-year savings: $${yearly.toFixed(0)}`;
+        }
+      }
+    });
+  }
+
+  const qualify = document.querySelector(".qualify-form");
+  if (qualify) {
+    qualify.addEventListener("submit", (e) => {
+      e.preventDefault();
+      alert("Thanks! We'll review your info and follow up soon.");
+      qualify.reset();
+    });
+  }
 });
