@@ -86,13 +86,14 @@ body {
   background: #e3f2fd;
 }
 
-  .infographic,
-  .feature-image {
-    width: 100%;
-    max-width: 600px;
-    height: auto;
-    margin-top: 1rem;
-  }
+.infographic,
+.feature-image {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  margin: 1rem auto 0;
+}
 
 .content {
   padding: 2rem;
