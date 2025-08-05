@@ -43,23 +43,20 @@ body {
 }
 
 .hero {
+  background-image: url("https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=1400&q=80");
+  background-size: cover;
+  background-position: center;
   text-align: center;
   color: #fff;
-  position: relative;
-}
-
-.hero-image {
-  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 60vh;
-  object-fit: cover;
-  display: block;
+  padding: 0 1rem;
 }
 
 .hero-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  max-width: 600px;
 }
 
 .hero h1 {
