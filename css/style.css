@@ -89,10 +89,10 @@ body {
 .infographic,
 .feature-image {
   display: block;
-  width: 100%;
-  max-width: 600px;
+  width: calc(100% + 4rem);
+  max-width: none;
   height: auto;
-  margin: 1rem auto 0;
+  margin: 1rem -2rem 0;
 }
 
 .content {
