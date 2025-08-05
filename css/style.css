@@ -56,6 +56,9 @@ body {
 
 .hero-content {
   padding: 0 1rem;
+  max-width: 600px;
+  text-align: center;
+  margin: 0 auto;
 }
 
 .hero h1 {
@@ -95,21 +98,27 @@ body {
   padding: 2rem;
 }
 
-.contact-form,
-.qualify-form {
+.contact-form {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   max-width: 400px;
 }
 
-.qualify-form fieldset {
+.contact-form input,
+.contact-form textarea {
+  padding: 0.5rem;
   border: 1px solid #ccc;
-  padding: 1rem;
+  border-radius: 4px;
 }
 
-.qualify-form legend {
-  font-weight: 600;
+.contact-form button {
+  background: #1e88e5;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .qualify-form .form-group {
@@ -150,14 +159,27 @@ body {
   border-radius: 4px;
 }
 
-.contact-form button,
-.qualify-form button {
+.step {
+  display: none;
+}
+
+.step.active {
+  display: block;
+}
+
+.step label {
+  display: block;
+  margin-top: 1rem;
+}
+
+.step button {
   background: #1e88e5;
   color: #fff;
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  margin-top: 1rem;
 }
 
 .estimator-form {

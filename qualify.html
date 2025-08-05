@@ -60,151 +60,57 @@
         <p id="savings-result"></p>
         <p>We respect your privacy. No spam. Just savings.</p>
       </section>
-
-      <h1>Solar Savings, Made Simple.</h1>
-      <p>
-        The Greensboro Net Metering Program helps homeowners save more by
-        feeding extra solar power back to the grid.
-      </p>
-      <form class="qualify-form" action="#" method="get">
-        <fieldset class="basic-info">
-          <legend>Basic Information</legend>
-
-          <div class="form-group">
-            <label for="homeowner">Are you a homeowner?</label>
-            <select id="homeowner" name="homeowner" required>
-              <option value="">Select</option>
-              <option>Yes</option>
-              <option>No</option>
-            </select>
+      
+      <section class="prequal-quiz">
+        <h1>Solar Savings, Made Simple.</h1>
+        <form id="quiz-form">
+          <div class="step active">
+            <p class="message">
+              Duke Energy keeps hiking rates. What's your ZIP so we can check local
+              savings?
+            </p>
+            <label for="quiz-zip">ZIP Code</label>
+            <input type="text" id="quiz-zip" required />
+            <button type="button" class="next">Next</button>
           </div>
-
-          <div class="form-group">
-            <label for="taxes">Do you file federal taxes?</label>
-            <select id="taxes" name="taxes" required>
-              <option value="">Select</option>
-              <option>Yes</option>
-              <option>No</option>
-            </select>
+          <div class="step">
+            <p class="message">
+              Every dollar you pay Duke leaves Greensboro. About how much is your
+              monthly electric bill?
+            </p>
+            <label for="quiz-bill">Monthly Electric Bill ($)</label>
+            <input type="number" id="quiz-bill" required />
+            <button type="button" class="next">Next</button>
           </div>
-
-          <div class="form-group">
-            <label for="credit">Is your credit score above 600?</label>
-            <select id="credit" name="credit" required>
+          <div class="step">
+            <p class="message">
+              Solar works on most roofs. What type do you have?
+            </p>
+            <label for="quiz-roof">Roof Type</label>
+            <select id="quiz-roof" required>
               <option value="">Select</option>
-              <option>Yes</option>
-              <option>No</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="roof">What type of roof do you have?</label>
-            <select id="roof" name="roof" required>
-              <option value="">Select</option>
-              <option>Slatted</option>
-              <option>Panels</option>
+              <option>Shingle</option>
+              <option>Metal</option>
+              <option>Tile</option>
+              <option>Flat</option>
               <option>Other</option>
             </select>
+            <button type="button" class="next">Next</button>
           </div>
-
-          <div class="form-group">
-            <label for="billname">Whose name is on the electric bill?</label>
-            <input id="billname" name="billname" type="text" required />
+          <div class="step">
+            <p class="message">
+              You're a great fit! Let's lock in your savings.
+            </p>
+            <label for="quiz-name">Name</label>
+            <input type="text" id="quiz-name" required />
+            <label for="quiz-email">Email</label>
+            <input type="email" id="quiz-email" required />
+            <label for="quiz-phone">Phone</label>
+            <input type="tel" id="quiz-phone" required />
+            <button type="submit">Get My Savings</button>
           </div>
-
-          <div class="form-group">
-            <label for="usage">12-month usage statement (kWh)</label>
-            <input id="usage" name="usage" type="text" required />
-          </div>
-
-          <div class="form-group">
-            <label for="decision">Are all decision makers present?</label>
-            <select id="decision" name="decision" required>
-              <option value="">Select</option>
-              <option>Yes</option>
-              <option>No</option>
-            </select>
-          </div>
-
-          <fieldset class="sub-group">
-            <legend>Do you need roof or tree removal?</legend>
-            <label
-              ><input type="checkbox" name="removal" value="roof" /> Roof
-              removal</label
-            >
-            <label
-              ><input type="checkbox" name="removal" value="tree" /> Tree
-              removal</label
-            >
-          </fieldset>
-        </fieldset>
-
-        <fieldset class="upgrades">
-          <legend>Energy-Efficient Upgrades in the Last 12 Months</legend>
-          <div class="checkbox-grid">
-            <label
-              ><input type="checkbox" name="upgrades" value="insulation" />
-              Insulation</label
-            >
-            <label
-              ><input type="checkbox" name="upgrades" value="windows" />
-              Windows</label
-            >
-            <label
-              ><input type="checkbox" name="upgrades" value="water heater" />
-              Water Heater</label
-            >
-            <label
-              ><input type="checkbox" name="upgrades" value="HVAC" /> HVAC</label
-            >
-            <label
-              ><input type="checkbox" name="upgrades" value="heat pump" /> Heat
-              Pump</label
-            >
-            <label
-              ><input type="checkbox" name="upgrades" value="pool" /> Pool</label
-            >
-            <label
-              ><input type="checkbox" name="upgrades" value="pool pump" /> Pool
-              Pump</label
-            >
-            <label
-              ><input type="checkbox" name="upgrades" value="smart thermostat" />
-              Smart Thermostat</label
-            >
-            <label
-              ><input type="checkbox" name="upgrades" value="washer" />
-              Washer</label
-            >
-            <label
-              ><input type="checkbox" name="upgrades" value="dryer" />
-              Dryer</label
-            >
-            <label
-              ><input type="checkbox" name="upgrades" value="fridge" />
-              Fridge</label
-            >
-            <label
-              ><input type="checkbox" name="upgrades" value="freezer" />
-              Freezer</label
-            >
-            <label
-              ><input type="checkbox" name="upgrades" value="led lights" /> LED
-              Lights</label
-            >
-            <label
-              ><input type="checkbox" name="upgrades" value="doors" />
-              Doors</label
-            >
-            <label
-              ><input type="checkbox" name="upgrades" value="other" />
-              Other</label
-            >
-          </div>
-        </fieldset>
-
-        <button type="submit">Submit</button>
-      </form>
+        </form>
+      </section>
     </main>
 
     <footer>
