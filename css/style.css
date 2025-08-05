@@ -43,25 +43,19 @@ body {
 }
 
 .hero {
-  background: url("https://images.unsplash.com/photo-1605478900747-37c2d0ef6e1a?auto=format&fit=crop&w=1400&q=80")
-    center/cover no-repeat;
-  color: #fff;
   text-align: center;
   color: #fff;
-}
-
-.hero-image {
-  width: 100%;
-  height: 60vh;
-  object-fit: cover;
-  display: block;
+  position: relative;
+  min-height: 60vh;
+  background: url("https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=1400&q=80")
+    center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  padding: 0 1rem;
 }
 
 .hero h1 {
@@ -116,6 +110,35 @@ body {
 
 .qualify-form legend {
   font-weight: 600;
+}
+
+.qualify-form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.qualify-form fieldset.basic-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.qualify-form fieldset.upgrades .checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.5rem;
+}
+
+.qualify-form fieldset.upgrades .checkbox-grid label {
+  display: flex;
+  align-items: center;
+}
+
+.qualify-form .sub-group {
+  border: none;
+  padding: 0;
+  display: flex;
+  gap: 1rem;
 }
 
 .contact-form input,
