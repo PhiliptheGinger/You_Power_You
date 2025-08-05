@@ -86,12 +86,13 @@ body {
   background: #e3f2fd;
 }
 
-.infographic {
-  width: 100%;
-  max-width: 600px;
-  height: auto;
-  margin-top: 1rem;
-}
+  .infographic,
+  .feature-image {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    margin-top: 1rem;
+  }
 
 .content {
   padding: 2rem;
