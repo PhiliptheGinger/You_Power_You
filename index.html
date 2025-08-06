@@ -247,6 +247,31 @@
             font-size: 1.2rem;
         }
 
+        .testimonial {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            border-left: 5px solid #2c5530;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .testimonial blockquote {
+            font-size: 1.2rem;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial cite {
+            font-weight: 600;
+            color: #2c5530;
+        }
+
+        .testimonial cite a {
+            color: inherit;
+            text-decoration: none;
+        }
+
 
         footer {
             background: #2c5530;
@@ -287,7 +312,7 @@
                 <li><a href="#rate">Rates</a></li>
                 <li><a href="#net">Net Metering</a></li>
                 <li><a href="#community">Community</a></li>
-                <li><a href="testimonials.html">Testimonials</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
                 <li><a href="faq.html">FAQ</a></li>
                 <li><a href="about.html">About</a></li>
                 <li><a href="qualify.html">Qualify</a></li>
@@ -408,6 +433,14 @@
         </ul>
     </section>
 
+    <section id="testimonials" class="info-section alt">
+        <h2>What Homeowners Say</h2>
+        <div class="testimonial">
+            <blockquote id="testimonial">"Installed solar panels last year. My electric bills in the summer are $20 a month. Overall, my average monthly bill dropped from $170 a month down to about $50 a month."</blockquote>
+            <cite id="testimonial-link"><a href="https://www.facebook.com/danielaquinofoto/posts/10236359808196036" target="_blank" rel="noopener">Source</a></cite>
+        </div>
+    </section>
+
     <section class="info-section" style="background: linear-gradient(135deg, #2c5530, #4a7c59); color: white; text-align: center;">
         <h2 style="color: white;">Ready to Start Saving?</h2>
         <p>4,000+ Triad homes already save</p>
@@ -420,6 +453,40 @@
         </div>
         <p>© 2024 You Power You. All rights reserved.</p>
     </footer>
+
+    <script>
+        const testimonials = [
+            {
+                text: "\"Installed solar panels last year. My electric bills in the summer are $20 a month. Overall, my average monthly bill dropped from $170 a month down to about $50 a month.\"",
+                link: "https://www.facebook.com/danielaquinofoto/posts/10236359808196036"
+            },
+            {
+                text: "\"We have it!! I wish we would have added 1-2 extra panels but we still haven't had to pay a bill.\"",
+                link: "https://www.facebook.com/groups/1775970472619353/posts/4230003480549361/"
+            },
+            {
+                text: "\"I just love our solar panels and Powerwalls from @Tesla! This is our payment for energy produced this year! And that's not counting the power outages when we were the only people in town to have power! Priceless!\"",
+                link: "https://twitter.com/andrebdp/status/1750338028806041984"
+            },
+            {
+                text: "\"Glad I got solar panels on my house – because I'm going to run the AC ALL night. It's still hot in Antioch.\"",
+                link: "https://twitter.com/Teila_M/status/351258487761281024"
+            },
+            {
+                text: "\"The best decision I have ever made as a family man. For the first time ever, we are enjoying 24 hrs power supply. I am officially off the grid. Alhamdulillah ✌\"",
+                link: "https://twitter.com/Nasir1on1/status/1688858516524515328"
+            }
+        ];
+
+        let currentTestimonial = 0;
+        setInterval(() => {
+            const testimonialEl = document.getElementById("testimonial");
+            const linkEl = document.getElementById("testimonial-link").querySelector("a");
+            currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+            testimonialEl.textContent = testimonials[currentTestimonial].text;
+            linkEl.href = testimonials[currentTestimonial].link;
+        }, 8000);
+    </script>
 
     <script>
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
