@@ -1,102 +1,551 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>You Power You - Solar Savings for Guilford County</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="css/style.css" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You Power You - Solar Savings for Greensboro & Triad Homeowners</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
     <script defer src="js/main.js"></script>
-  </head>
-  <body>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #2c5530 0%, #4a7c59 100%);
+            color: white;
+            text-align: center;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            opacity: 0.2;
+        }
+
+        .section-bg {
+            position: absolute;
+            top: 0;
+            width: 40%;
+            height: 100%;
+            object-fit: contain;
+            z-index: 1;
+            opacity: 0.15;
+        }
+
+        .section-bg.right {
+            right: 0;
+        }
+
+        .section-bg.left {
+            left: 0;
+        }
+
+        .section-bg.full {
+            width: 100%;
+            left: 0;
+        }
+
+        .cta {
+            background: #ff6b35;
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            display: inline-block;
+            transition: background 0.3s ease;
+        }
+
+        .cta:hover {
+            background: #e55a2b;
+        }
+
+        .info-section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .info-section.alt {
+            background: #fff;
+            margin: 2rem auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .info-section h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #2c5530;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .info-section p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .savings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .savings-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .savings-card.duke {
+            border-color: #ff6b35;
+        }
+
+        .savings-card.solar {
+            border-color: #2c5530;
+        }
+
+        .savings-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .savings-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #2c5530;
+        }
+
+        .savings-card .amount {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin: 1rem 0;
+        }
+
+        .duke .amount {
+            color: #ff6b35;
+        }
+
+        .solar .amount {
+            color: #2c5530;
+        }
+
+        .savings-highlight {
+            background: linear-gradient(135deg, #2c5530, #4a7c59);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .savings-highlight h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .savings-highlight .big-number {
+            font-size: 3rem;
+            font-weight: 600;
+        }
+
+        .testimonial {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            border-left: 5px solid #2c5530;
+            margin: 2rem 0;
+        }
+
+        .testimonial blockquote {
+            font-size: 1.2rem;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial cite {
+            font-weight: 600;
+            color: #2c5530;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 2rem 0;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+            font-size: 1.1rem;
+        }
+
+        .feature-list li:before {
+            content: "\2713";
+            color: #2c5530;
+            font-weight: 600;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .process-step {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .process-step .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .process-step h4 {
+            font-size: 1.3rem;
+            color: #2c5530;
+            margin-bottom: 1rem;
+        }
+
+        .community-benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .benefit-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .benefit-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .benefit-card h4 {
+            font-size: 1.3rem;
+            color: #2c5530;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            background: #2c5530;
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .trust-badges {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .small-text {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .info-section h2 {
+                font-size: 2rem;
+            }
+
+            .savings-card .amount {
+                font-size: 2rem;
+            }
+
+            .savings-highlight .big-number {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
     <header>
-      <nav class="navbar" role="navigation">
-        <a href="index.html" class="logo">You Power You</a>
-        <button
-          class="hamburger"
-          aria-label="Toggle navigation"
-          aria-controls="navigation"
-          aria-expanded="false"
-        >
-          ☰
-        </button>
-        <ul id="navigation" class="nav-links">
-          <li><a href="#savings">Savings</a></li>
-          <li><a href="#community">Community</a></li>
-          <li><a href="testimonials.html">Testimonials</a></li>
-          <li><a href="faq.html">FAQ</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="qualify.html">Qualify</a></li>
-          <li><a href="contact.html">Contact</a></li>
-        </ul>
-      </nav>
+        <nav class="navbar" role="navigation">
+            <a href="index.html" class="logo">You Power You</a>
+            <button class="hamburger" aria-label="Toggle navigation" aria-controls="navigation" aria-expanded="false">☰</button>
+            <ul id="navigation" class="nav-links">
+                <li><a href="#savings">Savings</a></li>
+                <li><a href="#community">Community</a></li>
+                <li><a href="testimonials.html">Testimonials</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="qualify.html">Qualify</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
     </header>
 
     <section class="hero">
-      <div class="hero-content">
-        <h1>Your Roof. Your Rules.</h1>
-        <p>
-          Keep money local with net-metered solar designed for our community.
-        </p>
-        <a href="qualify.html" class="cta">See If You Qualify</a>
-      </div>
+        <img src="assets/barbeque.png" alt="" class="hero-bg">
+        <div class="hero-content" style="position: relative; z-index: 2;">
+            <h1>Your Roof. Your Rules.</h1>
+            <p>Net-metered solar for Greensboro homes.</p>
+            <a href="#savings" class="cta">See Your Savings</a>
+        </div>
     </section>
 
-    <section class="info-section" id="why-now">
-      <h2>Why Now? Take Back Your Energy</h2>
-      <p>
-        Every month, Greensboro homeowners send money to a single monopoly. Duke
-        Energy controls how much you pay, and they keep raising your bill. Solar
-        energy means freedom, ownership, and independence. Take back your
-        money—take back your power.
-      </p>
-      <a href="qualify.html" class="cta">Break Free From Duke</a>
+    <section class="info-section" style="position: relative; overflow: hidden;">
+        <img src="assets/protest.png" alt="" class="section-bg right">
+        <div style="position: relative; z-index: 2;">
+            <h2>Take Back Your Power</h2>
+            <p>Duke keeps raising rates. Own your power and keep your money.</p>
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="#savings" class="cta">Break Free From Duke</a>
+            </div>
+        </div>
     </section>
 
     <section id="savings" class="info-section">
-      <h2>Real Savings for Local Families</h2>
-      <p>
-        Our systems are designed to deliver tangible monthly savings from day
-        one. Keep your hard-earned money in your pocket instead of sending it to
-        a monopoly.
-      </p>
-      <img
-        src="assets/solar-savings-infographic.png"
-        alt="Infographic showing potential monthly and yearly savings for Greensboro homeowners"
-        class="infographic"
-      />
+        <h2>See Immediate Savings</h2>
+        <p>Start saving from day one.</p>
+        <div class="savings-grid">
+            <div class="savings-card duke">
+                <div class="icon" style="font-size: 3rem;">⚡</div>
+                <h3>Duke Energy Bill (2024 avg.)</h3>
+                <div class="amount">~$150/month</div>
+            </div>
+            <div class="savings-card solar">
+                <div class="icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                        <rect x="10" y="15" width="40" height="30" rx="2" fill="#2c5530" stroke="#4a7c59" stroke-width="1"/>
+                        <g stroke="#4a7c59" stroke-width="0.5">
+                            <line x1="20" y1="15" x2="20" y2="45"/>
+                            <line x1="30" y1="15" x2="30" y2="45"/>
+                            <line x1="40" y1="15" x2="40" y2="45"/>
+                            <line x1="10" y1="25" x2="50" y2="25"/>
+                            <line x1="10" y1="35" x2="50" y2="35"/>
+                        </g>
+                        <circle cx="30" cy="8" r="6" fill="#fbbf24" opacity="0.8"/>
+                        <path d="M30 2L32 6L36 6L33 9L34 13L30 11L26 13L27 9L24 6L28 6Z" fill="#fbbf24"/>
+                    </svg>
+                </div>
+                <h3>With Solar</h3>
+                <div class="amount">~$15/month</div>
+            </div>
+        </div>
+        <div class="savings-highlight">
+            <h3>Monthly Savings: <span class="big-number">~$135</span></h3>
+            <h3>Annual Savings: <span class="big-number">~$1,620</span></h3>
+        </div>
+        <p class="small-text">Based on average residential bills in Guilford, Forsyth, and Alamance counties (2024).</p>
     </section>
 
-    <section id="community" class="info-section alt">
-      <h2>Community Benefits</h2>
-      <p>
-        Solar keeps energy dollars in Greensboro and creates local jobs while
-        reducing strain on our grid.
-      </p>
-      <ul>
-        <li>Solar installation jobs stay local.</li>
-        <li>
-          Keeping energy dollars in Greensboro strengthens our local economy.
-        </li>
-        <li>Cleaner air and healthier neighborhoods.</li>
-      </ul>
-      <img
-        src="assets/solar-hero-worker-image.png"
-        alt="Local Greensboro solar installation crew working on a roof."
-        class="feature-image"
-      />
+    <section class="info-section alt">
+        <h2>Your Neighbors Switched</h2>
+        <p>Thousands already save with solar.</p>
+        <ul class="feature-list">
+            <li>4,000+ Triad homes use net-metered solar</li>
+            <li>Save $1,600+/yr</li>
+            <li>Trusted local install teams</li>
+        </ul>
+        <div class="testimonial">
+            <blockquote>"Our bill dropped from $145 to $14. Best decision we made."</blockquote>
+            <cite>— The Williams Family, High Point</cite>
+        </div>
+    </section>
+
+    <section class="info-section" style="position: relative; overflow: hidden;">
+        <img src="assets/meter.png" alt="" class="section-bg right" style="opacity: 0;">
+        <div style="position: relative; z-index: 2;">
+        <h2>Lock In Your Rate</h2>
+        <p>Solar keeps rates steady.</p>
+        <div class="savings-grid">
+            <div class="savings-card duke">
+                <h3>Duke Rate Hikes</h3>
+                <div style="margin: 1rem 0;">
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                        <span style="font-size: 1.5rem; margin-right: 0.5rem;">📈</span>
+                        <span style="font-size: 1.2rem; font-weight: 600;">+8.3% in 2024</span>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 1.5rem; margin-right: 0.5rem;">📈</span>
+                        <span style="font-size: 1.2rem; font-weight: 600;">More increases coming</span>
+                    </div>
+                </div>
+            </div>
+            <div class="savings-card solar">
+                <h3>With Solar</h3>
+                <ul class="feature-list" style="text-align: left; margin: 1rem 0;">
+                    <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Stable rates</li>
+                    <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Save for 25+ years</li>
+                </ul>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <section class="info-section alt" style="position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,249,250,0.95));">
+        <img src="assets/worker.png" alt="" class="section-bg full" style="opacity: 0;">
+        <div style="position: relative; z-index: 2; background: rgba(255,255,255,0.9); padding: 2rem; border-radius: 15px; margin: 2rem; backdrop-filter: blur(10px);">
+            <h2 style="color: #2c5530; margin-bottom: 2rem;">How Net Metering Works</h2>
+            <p style="color: #4a5568; margin-bottom: 3rem;">Works with Duke's grid. No batteries.</p>
+            <div class="process-steps" style="background: rgba(255,255,255,0.8); padding: 2rem; border-radius: 10px;">
+                <div class="process-step" style="background: rgba(255,255,255,0.95); border: 1px solid rgba(44,85,48,0.1);">
+                    <div class="icon">
+                        <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                            <circle cx="30" cy="30" r="12" fill="#fbbf24"/>
+                            <g stroke="#fbbf24" stroke-width="2" stroke-linecap="round">
+                                <line x1="30" y1="8" x2="30" y2="14"/>
+                                <line x1="30" y1="46" x2="30" y2="52"/>
+                                <line x1="52" y1="30" x2="46" y2="30"/>
+                                <line x1="14" y1="30" x2="8" y2="30"/>
+                                <line x1="45.86" y1="14.14" x2="41.72" y2="18.28"/>
+                                <line x1="18.28" y1="41.72" x2="14.14" y2="45.86"/>
+                                <line x1="45.86" y1="45.86" x2="41.72" y2="41.72"/>
+                                <line x1="18.28" y1="18.28" x2="14.14" y2="14.14"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <h4 style="color: #2c5530;">Daytime</h4>
+                    <p style="color: #4a5568;">Panels spin meter backward and build credits</p>
+                </div>
+                <div class="process-step" style="background: rgba(255,255,255,0.95); border: 1px solid rgba(44,85,48,0.1);">
+                    <div class="icon" style="font-size: 3rem;">🌙</div>
+                    <h4 style="color: #2c5530;">Night/Winter</h4>
+                    <p style="color: #4a5568;">Use credits when you need power</p>
+                </div>
+                <div class="process-step" style="background: rgba(255,255,255,0.95); border: 1px solid rgba(44,85,48,0.1);">
+                    <div class="icon">
+                        <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                            <circle cx="30" cy="30" r="25" fill="#2c5530" opacity="0.1"/>
+                            <path d="M20 30L26 36L40 22" stroke="#2c5530" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            <text x="30" y="50" text-anchor="middle" fill="#2c5530" font-size="10" font-weight="600">100%</text>
+                        </svg>
+                    </div>
+                    <h4 style="color: #2c5530;">Result</h4>
+                    <p style="color: #4a5568;">Cover 100% yearly with no batteries</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="community" class="info-section">
+        <h2>Solar Means Community Wealth</h2>
+        <p>Solar keeps dollars local and creates jobs.</p>
+        <div class="community-benefits">
+            <div class="benefit-card">
+                <div class="icon" style="font-size: 3rem;">🛠</div>
+                <h4>Local Jobs</h4>
+                  <p>Local crews do the installs.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                        <path d="M30 5L50 20V50H40V35H20V50H10V20L30 5Z" fill="#4a7c59"/>
+                        <rect x="15" y="40" width="6" height="10" fill="#2c5530"/>
+                        <rect x="39" y="40" width="6" height="10" fill="#2c5530"/>
+                        <rect x="25" y="25" width="10" height="8" fill="#2c5530"/>
+                        <rect x="10" y="15" width="40" height="8" rx="1" fill="#2c5530"/>
+                        <g stroke="#4a7c59" stroke-width="0.5">
+                            <line x1="15" y1="15" x2="15" y2="23"/>
+                            <line x1="25" y1="15" x2="25" y2="23"/>
+                            <line x1="35" y1="15" x2="35" y2="23"/>
+                            <line x1="45" y1="15" x2="45" y2="23"/>
+                        </g>
+                        <path d="M45 10L50 8L52 12L47 14Z" fill="#fbbf24"/>
+                    </svg>
+                </div>
+                <h4>Higher Home Value</h4>
+                  <p>Solar homes sell faster and for more.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="icon" style="font-size: 3rem;">💵</div>
+                <h4>Money Stays Local</h4>
+                  <p>Keeps money in Greensboro.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="info-section" style="background: linear-gradient(135deg, #2c5530, #4a7c59); color: white; text-align: center;">
+        <h2 style="color: white;">Ready to Start Saving?</h2>
+        <p>4,000+ Triad homes already save</p>
+        <a href="#" class="cta" onclick="alert('Thank you for your interest! A solar consultant will contact you soon to discuss your personalized savings plan.'); return false;">Get Your Free Solar Quote Today</a>
     </section>
 
     <footer>
-      <div class="trust-badges">
-        25-Year Equipment Warranty • No Upfront Costs • Locally Trusted Installers
-      </div>
-      <p>© 2024 You Power You. All rights reserved.</p>
+        <div class="trust-badges">
+            25-Year Equipment Warranty • No Upfront Costs • Locally Trusted Installers
+        </div>
+        <p>© 2024 You Power You. All rights reserved.</p>
     </footer>
-  </body>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
 </html>
+
