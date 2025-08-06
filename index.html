@@ -272,6 +272,28 @@
             text-decoration: none;
         }
 
+        .testimonial-text {
+            transition: transform 0.6s ease, opacity 0.6s ease;
+            display: inline-block;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .testimonial-exit {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        .testimonial-enter {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .testimonial-enter-active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
 
         footer {
             background: #2c5530;
@@ -436,7 +458,7 @@
     <section id="testimonials" class="info-section alt">
         <h2>What Homeowners Say</h2>
         <div class="testimonial">
-            <blockquote id="testimonial">"Installed solar panels last year. My electric bills in the summer are $20 a month. Overall, my average monthly bill dropped from $170 a month down to about $50 a month."</blockquote>
+            <blockquote id="testimonial" class="testimonial-text">"Installed solar panels last year. My electric bills in the summer are $20 a month. Overall, my average monthly bill dropped from $170 a month down to about $50 a month."</blockquote>
             <cite id="testimonial-link"><a href="https://www.facebook.com/danielaquinofoto/posts/10236359808196036" target="_blank" rel="noopener">Source</a></cite>
         </div>
     </section>
@@ -479,13 +501,32 @@
         ];
 
         let currentTestimonial = 0;
-        setInterval(() => {
-            const testimonialEl = document.getElementById("testimonial");
-            const linkEl = document.getElementById("testimonial-link").querySelector("a");
-            currentTestimonial = (currentTestimonial + 1) % testimonials.length;
-            testimonialEl.textContent = testimonials[currentTestimonial].text;
-            linkEl.href = testimonials[currentTestimonial].link;
-        }, 8000);
+        const testimonialEl = document.getElementById("testimonial");
+        const linkEl = document.getElementById("testimonial-link").querySelector("a");
+
+        function changeTestimonial() {
+            testimonialEl.classList.add("testimonial-exit");
+
+            setTimeout(() => {
+                currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+                testimonialEl.textContent = testimonials[currentTestimonial].text;
+                linkEl.href = testimonials[currentTestimonial].link;
+
+                testimonialEl.classList.remove("testimonial-exit");
+                testimonialEl.classList.add("testimonial-enter");
+
+                setTimeout(() => {
+                    testimonialEl.classList.remove("testimonial-enter");
+                    testimonialEl.classList.add("testimonial-enter-active");
+
+                    setTimeout(() => {
+                        testimonialEl.classList.remove("testimonial-enter-active");
+                    }, 600);
+                }, 50);
+            }, 600);
+        }
+
+        setInterval(changeTestimonial, 8000);
     </script>
 
     <script>
