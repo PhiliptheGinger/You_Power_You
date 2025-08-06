@@ -48,23 +48,11 @@
         .section-bg {
             position: absolute;
             top: 0;
-            width: 40%;
-            height: 100%;
-            object-fit: contain;
-            z-index: 1;
-        }
-
-        .section-bg.right {
-            right: 0;
-        }
-
-        .section-bg.left {
             left: 0;
-        }
-
-        .section-bg.full {
             width: 100%;
-            left: 0;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
         }
 
         /* Maintain a 16:9 area for background images */
@@ -100,7 +88,8 @@
         .aspect-ratio-box .inner {
             position: relative;
             z-index: 2;
-      }
+        }
+
         .cta {
             background: #ff6b35;
             color: white;
@@ -280,7 +269,7 @@
 
     <section id="why" class="info-section">
         <div class="aspect-ratio-box">
-            <img src="assets/protest.png" alt="" class="section-bg right">
+            <img src="assets/protest.png" alt="" class="section-bg">
             <div class="content">
                 <div class="inner" style="text-align: center;">
                     <h2>Take Back Your Power</h2>
@@ -321,40 +310,48 @@
         </div>
     </section>
 
-    <section id="rate" class="info-section" style="position: relative; overflow: hidden;">
-        <img src="assets/meter.png" alt="" class="section-bg right" style="opacity: 1;">
-        <div style="position: relative; z-index: 2;">
-            <h2>Lock In Your Rate</h2>
-            <p>Solar keeps rates steady.</p>
-            <div class="savings-grid">
-                <div class="savings-card duke">
-                    <h3>Duke Rate Hikes</h3>
-                    <ul class="feature-list" style="margin: 1rem 0;">
-                        <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">+8.3% in 2024</li>
-                        <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">More increases coming</li>
-                    </ul>
-                </div>
-                <div class="savings-card solar">
-                    <h3>With Solar</h3>
-                    <ul class="feature-list" style="margin: 1rem 0;">
-                        <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Stable rates</li>
-                        <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Save for 25+ years</li>
-                    </ul>
+    <section id="rate" class="info-section">
+        <div class="aspect-ratio-box">
+            <img src="assets/meter.png" alt="" class="section-bg" style="opacity: 1;">
+            <div class="content">
+                <div class="inner">
+                    <h2>Lock In Your Rate</h2>
+                    <p>Solar keeps rates steady.</p>
+                    <div class="savings-grid">
+                        <div class="savings-card duke">
+                            <h3>Duke Rate Hikes</h3>
+                            <ul class="feature-list" style="margin: 1rem 0;">
+                                <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">+8.3% in 2024</li>
+                                <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">More increases coming</li>
+                            </ul>
+                        </div>
+                        <div class="savings-card solar">
+                            <h3>With Solar</h3>
+                            <ul class="feature-list" style="margin: 1rem 0;">
+                                <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Stable rates</li>
+                                <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Save for 25+ years</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="net" class="info-section alt" style="position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,249,250,0.95));">
-        <img src="assets/worker.png" alt="" class="section-bg full" style="opacity: 1;">
-        <div style="position: relative; z-index: 2; background: rgba(255,255,255,0.9); padding: 2rem; border-radius: 15px; margin: 2rem; backdrop-filter: blur(10px);">
-            <h2 style="color: #2c5530; margin-bottom: 1rem;">How Net Metering Works</h2>
-            <p style="color: #4a5568; margin-bottom: 1rem;">No batteries needed.</p>
-            <ul class="feature-list" style="background: rgba(255,255,255,0.8); padding: 1rem; border-radius: 10px; text-align: left;">
-                <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Day: panels build credits</li>
-                <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Night: use credits</li>
-                <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Cover 100% yearly</li>
-            </ul>
+    <section id="net" class="info-section alt" style="background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,249,250,0.95));">
+        <div class="aspect-ratio-box">
+            <img src="assets/worker.png" alt="" class="section-bg" style="opacity: 1;">
+            <div class="content">
+                <div class="inner" style="background: rgba(255,255,255,0.9); padding: 2rem; border-radius: 15px; margin: 2rem; backdrop-filter: blur(10px);">
+                    <h2 style="color: #2c5530; margin-bottom: 1rem;">How Net Metering Works</h2>
+                    <p style="color: #4a5568; margin-bottom: 1rem;">No batteries needed.</p>
+                    <ul class="feature-list" style="background: rgba(255,255,255,0.8); padding: 1rem; border-radius: 10px; text-align: left;">
+                        <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Day: panels build credits</li>
+                        <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Night: use credits</li>
+                        <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Cover 100% yearly</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </section>
 
