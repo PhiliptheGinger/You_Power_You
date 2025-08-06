@@ -27,7 +27,7 @@
             background: linear-gradient(135deg, #2c5530 0%, #4a7c59 100%);
             color: white;
             text-align: center;
-            padding: 4rem 2rem;
+            padding: 0;
             position: relative;
         }
 
@@ -45,17 +45,6 @@
             margin-right: auto;
         }
 
-        .hero-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 1;
-            opacity: 1;
-        }
-
         .section-bg {
             position: absolute;
             top: 0;
@@ -63,7 +52,6 @@
             height: 100%;
             object-fit: contain;
             z-index: 1;
-            opacity: 0;
         }
 
         .section-bg.right {
@@ -79,6 +67,40 @@
             left: 0;
         }
 
+        /* Maintain a 16:9 area for background images */
+        .aspect-ratio-box {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            overflow: hidden;
+        }
+
+        .aspect-ratio-box > .content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .aspect-ratio-box img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.75;
+            z-index: 1;
+        }
+
+        .aspect-ratio-box .inner {
+            position: relative;
+            z-index: 2;
+        }
         .cta {
             background: #ff6b35;
             color: white;
@@ -342,21 +364,27 @@
     </header>
 
     <section class="hero">
-        <img src="assets/barbeque.png" alt="" class="hero-bg">
-        <div class="hero-content" style="position: relative; z-index: 2;">
-            <h1>Your Roof. Your Rules.</h1>
-            <p>Net-metered solar for Greensboro homes.</p>
-            <a href="#savings" class="cta">See Your Savings</a>
+        <div class="aspect-ratio-box">
+            <img src="assets/barbeque.png" alt="" class="hero-bg">
+            <div class="content">
+                <div class="inner">
+                    <h1>Your Roof. Your Rules.</h1>
+                    <p>Net-metered solar for Greensboro homes.</p>
+                    <a href="#savings" class="cta">See Your Savings</a>
+                </div>
+            </div>
         </div>
     </section>
 
-    <section class="info-section" style="position: relative; overflow: hidden;">
-        <img src="assets/protest.png" alt="" class="section-bg right" style="opacity: 0.75;">
-        <div style="position: relative; z-index: 2;">
-            <h2>Take Back Your Power</h2>
-            <p>Duke keeps raising rates. Own your power and keep your money.</p>
-            <div style="text-align: center; margin-top: 2rem;">
-                <a href="#savings" class="cta">Break Free From Duke</a>
+    <section class="info-section">
+        <div class="aspect-ratio-box">
+            <img src="assets/protest.png" alt="" class="section-bg right">
+            <div class="content">
+                <div class="inner" style="text-align: center;">
+                    <h2>Take Back Your Power</h2>
+                    <p>Duke keeps raising rates. Own your power and keep your money.</p>
+                    <a href="#savings" class="cta">Break Free From Duke</a>
+                </div>
             </div>
         </div>
     </section>
@@ -411,7 +439,7 @@
     </section>
 
     <section class="info-section" style="position: relative; overflow: hidden;">
-        <img src="assets/meter.png" alt="" class="section-bg right" style="opacity: 0;">
+        <img src="assets/meter.png" alt="" class="section-bg right" style="opacity: 1;">
         <div style="position: relative; z-index: 2;">
         <h2>Lock In Your Rate</h2>
         <p>Solar keeps rates steady.</p>
@@ -430,10 +458,10 @@
                 </div>
             </div>
             <div class="savings-card solar">
-                <h3>With Solar Protection</h3>
+                <h3>With Solar</h3>
                 <ul class="feature-list" style="text-align: left; margin: 1rem 0;">
-                    <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Stable, predictable rates</li>
-                    <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Lock in savings for 25+ years</li>
+                    <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Stable rates</li>
+                    <li style="padding: 0.5rem 0; border: none; font-size: 1rem;">Save for 25+ years</li>
                 </ul>
             </div>
         </div>
@@ -442,7 +470,7 @@
 
     <section class="info-section alt" style="position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,249,250,0.95));">
         <img src="assets/worker.png" alt="" class="section-bg full" style="opacity: 1;">
-        <div style="position: relative; z-index: 2; background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 15px; margin: 2rem; backdrop-filter: blur(10px);">
+        <div style="position: relative; z-index: 2; background: rgba(255,255,255,0.9); padding: 2rem; border-radius: 15px; margin: 2rem; backdrop-filter: blur(10px);">
             <h2 style="color: #2c5530; margin-bottom: 2rem;">How Net Metering Works</h2>
             <p style="color: #4a5568; margin-bottom: 3rem;">Works with Duke's grid. No batteries.</p>
             <div class="process-steps" style="background: rgba(255,255,255,0.8); padding: 2rem; border-radius: 10px;">
@@ -468,7 +496,7 @@
                 <div class="process-step" style="background: rgba(255,255,255,0.95); border: 1px solid rgba(44,85,48,0.1);">
                     <div class="icon" style="font-size: 3rem;">🌙</div>
                     <h4 style="color: #2c5530;">Night/Winter</h4>
-                    <p style="color: #4a5568;">Use credits to offset Duke charges</p>
+                    <p style="color: #4a5568;">Use credits when you need power</p>
                 </div>
                 <div class="process-step" style="background: rgba(255,255,255,0.95); border: 1px solid rgba(44,85,48,0.1);">
                     <div class="icon">
@@ -492,7 +520,7 @@
             <div class="benefit-card">
                 <div class="icon" style="font-size: 3rem;">🛠</div>
                 <h4>Local Jobs</h4>
-                <p>Solar installation jobs stay local. Your neighbors do the installs.</p>
+                  <p>Local crews do the installs.</p>
             </div>
             <div class="benefit-card">
                 <div class="icon">
@@ -512,7 +540,7 @@
                     </svg>
                 </div>
                 <h4>Higher Home Value</h4>
-                <p>Solar homes sell faster and for more money.</p>
+                  <p>Solar homes sell faster and for more.</p>
             </div>
             <div class="benefit-card">
                 <div class="icon" style="font-size: 3rem;">💵</div>
