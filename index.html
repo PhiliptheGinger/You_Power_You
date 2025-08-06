@@ -55,20 +55,21 @@
             z-index: 1;
         }
 
-        /* Maintain a 16:9 area for background images */
+        /* Maintain a 16:9 area for background images without clipping content */
         .aspect-ratio-box {
             position: relative;
             width: 100%;
-            padding-top: 56.25%;
-            overflow: hidden;
+            min-height: 56.25vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .aspect-ratio-box > .content {
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
+            position: relative;
+            z-index: 2;
+            padding: 2rem;
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -89,21 +90,20 @@
         .overlay-container {
             position: relative;
             width: 100%;
-            height: 100%;
-        }
-
-        .aspect-ratio-box > .overlay-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
+            min-height: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .overlay-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
+            z-index: 1;
         }
 
         .overlay-container::before {
@@ -118,15 +118,13 @@
         }
 
         .overlay-container .content {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            position: relative;
+            z-index: 3;
+            padding: 2rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 3;
+            width: 100%;
         }
 
         .aspect-ratio-box .inner {
