@@ -1,0 +1,12 @@
+node_modules/
+package-lock.json
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.svg
+*.ico
+
+# keep placeholder for asset directories
+!assets/**/.gitkeep

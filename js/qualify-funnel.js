@@ -2,6 +2,8 @@ let currentScreen = 1;
 let selectedUpgrades = [];
 let currentTestimonial = 0;
 let savingsChart;
+let panoramaInner;
+let movingSun;
 
 function showScreen(index) {
   document.querySelector(`#screen${currentScreen}`).classList.add('hidden');
@@ -23,9 +25,21 @@ function prevScreen() {
 }
 
 function updateProgressBar() {
-  const progress = (currentScreen / 7) * 100;
+  const totalScreens = 7;
+  const progress = (currentScreen / totalScreens) * 100;
   document.getElementById('progressBar').style.width = progress + '%';
   document.getElementById('currentStep').textContent = currentScreen;
+
+  // Update the low-horizon panorama and moving sun based on progress.
+  // The panorama container is four times the width of the viewport (400%),
+  // so shifting it by up to 75% gives a smooth scroll through the segments.
+  const progressRatio = (currentScreen - 1) / (totalScreens - 1);
+  if (panoramaInner) {
+    panoramaInner.style.transform = 'translateX(' + (-progressRatio * 75) + '%)';
+  }
+  if (movingSun) {
+    movingSun.style.left = (progressRatio * 90) + 'vw';
+  }
 }
 
 function showTooltip(id) {
@@ -141,6 +155,11 @@ function restartFunnel() {
 // Event bindings
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Elements controlling the animated panorama and moving sun.
+  // These may not exist on pages that omit the panorama, so guard accordingly when used.
+  panoramaInner = document.getElementById('panoramaInner');
+  movingSun = document.getElementById('movingSun');
+
   updateProgressBar();
 
   document.getElementById('startBtn').addEventListener('click', nextScreen);
