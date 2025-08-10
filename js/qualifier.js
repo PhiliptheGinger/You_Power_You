@@ -2,8 +2,7 @@ let currentScreen = 1;
 let selectedUpgrades = [];
 let currentTestimonial = 0;
 let savingsChart;
-let panoramaInner;
-let movingSun;
+let progressSun;
 
 function showScreen(index) {
   document.querySelector(`#screen${currentScreen}`).classList.add('hidden');
@@ -27,18 +26,15 @@ function prevScreen() {
 function updateProgressBar() {
   const totalScreens = 7;
   const progress = (currentScreen / totalScreens) * 100;
-  document.getElementById('progressBar').style.width = progress + '%';
+  const bar = document.getElementById('progressBar');
+  bar.style.width = progress + '%';
   document.getElementById('currentStep').textContent = currentScreen;
 
-  // Update the low-horizon panorama and moving sun based on progress.
-  // The panorama container is four times the width of the viewport (400%),
-  // so shifting it by up to 75% gives a smooth scroll through the segments.
-  const progressRatio = (currentScreen - 1) / (totalScreens - 1);
-  if (panoramaInner) {
-    panoramaInner.style.transform = 'translateX(' + (-progressRatio * 75) + '%)';
-  }
-  if (movingSun) {
-    movingSun.style.left = (progressRatio * 90) + 'vw';
+  if (progressSun) {
+    const container = bar.parentElement;
+    const maxLeft = container.offsetWidth - progressSun.offsetWidth;
+    const ratio = (currentScreen - 1) / (totalScreens - 1);
+    progressSun.style.left = maxLeft * ratio + 'px';
   }
 }
 
@@ -135,7 +131,7 @@ function showTestimonial(index) {
   currentTestimonial = index;
 }
 
-function restartFunnel() {
+function restartQualifier() {
   currentScreen = 1;
   document.querySelectorAll('.screen').forEach(screen => screen.classList.add('hidden'));
   document.getElementById('screen1').classList.remove('hidden');
@@ -155,16 +151,12 @@ function restartFunnel() {
 // Event bindings
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Elements controlling the animated panorama and moving sun.
-  // These may not exist on pages that omit the panorama, so guard accordingly when used.
-  panoramaInner = document.getElementById('panoramaInner');
-  movingSun = document.getElementById('movingSun');
-
+  progressSun = document.getElementById('progressSun');
   updateProgressBar();
 
   document.getElementById('startBtn').addEventListener('click', nextScreen);
   document.querySelectorAll('.back-btn').forEach(btn => btn.addEventListener('click', prevScreen));
-  document.getElementById('restartBtn').addEventListener('click', restartFunnel);
+  document.getElementById('restartBtn').addEventListener('click', restartQualifier);
 
   document.getElementById('homeownerForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
   document.getElementById('qualificationForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
