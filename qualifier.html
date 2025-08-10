@@ -39,17 +39,12 @@
         .tooltip.show { visibility: visible; opacity: 1; }
         .upgrade-icon { transition: all 0.3s ease; }
         .upgrade-icon.selected { background-color: #2c5530; color: white; transform: scale(1.05); }
-        .menu-bg {
-            background-image: url('assets/index_assets/worker.png');
-            background-size: cover;
-            background-position: center;
-        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-brandBlue to-brandGreen min-h-screen font-sans">
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <!-- Progress Bar -->
-        <div class="mb-8 menu-bg p-4 rounded-2xl">
+        <div class="mb-8 p-4 rounded-2xl bg-white">
             <div class="relative bg-gray-200 rounded-full h-2">
                 <div id="progressBar" class="bg-gradient-to-r from-brandGreen to-brandBlue h-2 rounded-full progress-bar" style="width: 14.3%"></div>
                 <img id="progressSun" src="assets/spliced_social_icons/solar.png" alt="Sun" class="absolute -top-2 left-0 w-6 h-6 transition-all duration-500">
@@ -297,59 +292,59 @@
                             <div class="text-sm font-medium">Insulation</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="windows" aria-pressed="false">
-                            <div class="text-3xl mb-2">🪟</div>
+                            <img src="assets/spliced_energy_icons_final/windows.png" alt="Windows" class="w-12 h-12 mx-auto mb-2" />
                             <div class="text-sm font-medium">Windows</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="water_heater" aria-pressed="false">
-                            <div class="text-3xl mb-2">🚿</div>
+                            <img src="assets/spliced_energy_icons_final/question.png" alt="Water Heater" class="w-12 h-12 mx-auto mb-2" />
                             <div class="text-sm font-medium">Water Heater</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="hvac" aria-pressed="false">
-                            <div class="text-3xl mb-2">❄️</div>
+                            <img src="assets/spliced_energy_icons_final/hvac.png" alt="HVAC" class="w-12 h-12 mx-auto mb-2" />
                             <div class="text-sm font-medium">HVAC</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="heat_pump" aria-pressed="false">
-                            <div class="text-3xl mb-2">🔥</div>
+                            <img src="assets/spliced_energy_icons_final/hvac.png" alt="Heat Pump" class="w-12 h-12 mx-auto mb-2" />
                             <div class="text-sm font-medium">Heat Pump</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="pool" aria-pressed="false">
-                            <div class="text-3xl mb-2">🏊</div>
+                            <img src="assets/spliced_energy_icons_final/pool.png" alt="Pool" class="w-12 h-12 mx-auto mb-2" />
                             <div class="text-sm font-medium">Pool</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="pool_pump" aria-pressed="false">
-                            <div class="text-3xl mb-2">⚡</div>
+                            <img src="assets/spliced_energy_icons_final/pool_pump.png" alt="Pool Pump" class="w-12 h-12 mx-auto mb-2" />
                             <div class="text-sm font-medium">Pool Pump</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="thermostat" aria-pressed="false">
-                            <div class="text-3xl mb-2">🌡️</div>
+                            <img src="assets/spliced_energy_icons_final/smart_thermostat.png" alt="Smart Thermostat" class="w-12 h-12 mx-auto mb-2" />
                             <div class="text-sm font-medium">Smart Thermostat</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="washer" aria-pressed="false">
-                            <div class="text-3xl mb-2">👕</div>
+                            <img src="assets/spliced_energy_icons_final/washer.png" alt="Washer" class="w-12 h-12 mx-auto mb-2" />
                             <div class="text-sm font-medium">Washer</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="dryer" aria-pressed="false">
-                            <div class="text-3xl mb-2">🌪️</div>
+                            <img src="assets/spliced_energy_icons_final/dryer.png" alt="Dryer" class="w-12 h-12 mx-auto mb-2" />
                             <div class="text-sm font-medium">Dryer</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="fridge" aria-pressed="false">
-                            <div class="text-3xl mb-2">🧊</div>
+                            <img src="assets/spliced_energy_icons_final/freezer.png" alt="Fridge" class="w-12 h-12 mx-auto mb-2" />
                             <div class="text-sm font-medium">Fridge</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="freezer" aria-pressed="false">
-                            <div class="text-3xl mb-2">🥶</div>
+                            <img src="assets/spliced_energy_icons_final/freezer.png" alt="Freezer" class="w-12 h-12 mx-auto mb-2" />
                             <div class="text-sm font-medium">Freezer</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="led_lights" aria-pressed="false">
-                            <div class="text-3xl mb-2">💡</div>
+                            <img src="assets/spliced_energy_icons_final/led_lights.png" alt="LED Lights" class="w-12 h-12 mx-auto mb-2" />
                             <div class="text-sm font-medium">LED Lights</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="doors" aria-pressed="false">
-                            <div class="text-3xl mb-2">🚪</div>
+                            <img src="assets/spliced_energy_icons_final/doors.png" alt="Doors" class="w-12 h-12 mx-auto mb-2" />
                             <div class="text-sm font-medium">Doors</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="other" aria-pressed="false">
-                            <div class="text-3xl mb-2">❓</div>
+                            <img src="assets/spliced_energy_icons_final/other.png" alt="Other" class="w-12 h-12 mx-auto mb-2" />
                             <div class="text-sm font-medium">Other</div>
                         </button>
                     </div>
