@@ -1,123 +1,511 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Qualify - You Power You</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="css/style.css" />
-    <script defer src="js/main.js"></script>
-  </head>
-  <body>
-    <header>
-      <nav class="navbar" role="navigation">
-        <a href="index.html" class="logo">You Power You</a>
-        <button
-          class="hamburger"
-          aria-label="Toggle navigation"
-          aria-controls="navigation"
-          aria-expanded="false"
-        >
-          ☰
-        </button>
-        <ul id="navigation" class="nav-links">
-          <li><a href="index.html#savings">Savings</a></li>
-          <li><a href="index.html#community">Community</a></li>
-          <li><a href="index.html#testimonials">Testimonials</a></li>
-          <li><a href="faq.html">FAQ</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="qualify.html">Qualify</a></li>
-          <li><a href="contact.html">Contact</a></li>
-        </ul>
-      </nav>
-    </header>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Qualification Funnel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif']
+                    },
+                    colors: {
+                        brandGreen: '#2c5530',
+                        brandBlue: '#1e88e5'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .progress-bar { transition: width 0.5s ease-in-out; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-in { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn {
+            from { transform: translateX(-10px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .tooltip { visibility: hidden; opacity: 0; transition: opacity 0.3s, visibility 0.3s; }
+        .tooltip.show { visibility: visible; opacity: 1; }
+        .upgrade-icon { transition: all 0.3s ease; }
+        .upgrade-icon.selected { background-color: #2c5530; color: white; transform: scale(1.05); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-brandBlue to-brandGreen min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Progress Bar -->
+        <div class="mb-8">
+            <div class="bg-gray-200 rounded-full h-2">
+                <div id="progressBar" class="bg-gradient-to-r from-brandGreen to-brandBlue h-2 rounded-full progress-bar" style="width: 14.3%"></div>
+            </div>
+            <div class="text-center mt-2 text-sm text-gray-600">
+                Step <span id="currentStep">1</span> of 7
+            </div>
+        </div>
 
-    <main class="content qualify-grid">
-      <section class="savings-estimator">
-        <h2>Instant Solar Savings Estimator</h2>
-        <form class="estimator-form" action="#" method="get">
-          <label for="bill">Average monthly electric bill (required)</label>
-          <input type="number" id="bill" name="bill" required />
+        <!-- Screen 1: Welcome -->
+        <div id="screen1" class="screen fade-in">
+            <div class="text-center bg-white rounded-2xl shadow-xl p-8 md:p-12">
+                <!-- Solar Home Visual -->
+                <div class="mb-8">
+                    <svg viewBox="0 0 400 200" class="w-full max-w-md mx-auto" aria-hidden="true">
+                        <!-- House -->
+                        <rect x="100" y="120" width="200" height="80" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+                        <!-- Roof -->
+                        <polygon points="80,120 200,60 320,120" fill="#4A5568" stroke="#2D3748" stroke-width="2"/>
+                        <!-- Solar Panels -->
+                        <rect x="120" y="80" width="30" height="20" fill="#1E40AF" stroke="#1E3A8A" stroke-width="1"/>
+                        <rect x="160" y="80" width="30" height="20" fill="#1E40AF" stroke="#1E3A8A" stroke-width="1"/>
+                        <rect x="200" y="80" width="30" height="20" fill="#1E40AF" stroke="#1E3A8A" stroke-width="1"/>
+                        <rect x="240" y="80" width="30" height="20" fill="#1E40AF" stroke="#1E3A8A" stroke-width="1"/>
+                        <!-- Door -->
+                        <rect x="180" y="160" width="40" height="40" fill="#8B4513"/>
+                        <!-- Windows -->
+                        <rect x="130" y="140" width="25" height="25" fill="#87CEEB"/>
+                        <rect x="245" y="140" width="25" height="25" fill="#87CEEB"/>
+                        <!-- Upward Arrow Graph -->
+                        <g transform="translate(320, 100)">
+                            <line x1="0" y1="60" x2="60" y2="60" stroke="#2c5530" stroke-width="3"/>
+                            <line x1="0" y1="60" x2="0" y2="0" stroke="#2c5530" stroke-width="3"/>
+                            <polyline points="10,50 20,40 30,35 40,25 50,15" fill="none" stroke="#2c5530" stroke-width="3"/>
+                            <polygon points="45,10 55,15 50,25" fill="#2c5530"/>
+                        </g>
+                        <!-- Sun -->
+                        <circle cx="350" cy="30" r="20" fill="#FCD34D"/>
+                    </svg>
+                </div>
+                
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Check Your Solar Savings in Minutes</h1>
+                <p class="text-xl text-gray-600 mb-8">End the monopoly. Build equity, not bills.</p>
+                <button id="startBtn" class="bg-gradient-to-r from-brandGreen to-brandBlue hover:from-brandGreen/90 hover:to-brandBlue/90 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">See If You Qualify</button>
+            </div>
+        </div>
 
-          <label for="zip">Your ZIP code (required)</label>
-          <input type="text" id="zip" name="zip" required />
+        <!-- Screen 2: Homeowner Information -->
+        <div id="screen2" class="screen hidden">
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <!-- Greensboro Skyline Visual -->
+                <div class="mb-6">
+                    <svg viewBox="0 0 400 100" class="w-full max-w-lg mx-auto" aria-hidden="true">
+                        <!-- Skyline shapes -->
+                        <rect x="50" y="60" width="20" height="40" fill="#4A5568"/>
+                        <rect x="80" y="40" width="25" height="60" fill="#2D3748"/>
+                        <rect x="115" y="50" width="20" height="50" fill="#4A5568"/>
+                        <rect x="145" y="35" width="30" height="65" fill="#2D3748"/>
+                        <rect x="185" y="55" width="20" height="45" fill="#4A5568"/>
+                        <rect x="215" y="45" width="25" height="55" fill="#2D3748"/>
+                        <rect x="250" y="60" width="20" height="40" fill="#4A5568"/>
+                        <rect x="280" y="50" width="25" height="50" fill="#2D3748"/>
+                        <rect x="315" y="65" width="20" height="35" fill="#4A5568"/>
+                        <!-- Map Pin -->
+                        <g transform="translate(200, 20)">
+                            <circle cx="0" cy="0" r="8" fill="#EF4444"/>
+                            <polygon points="0,-8 -6,8 6,8" fill="#EF4444"/>
+                        </g>
+                    </svg>
+                </div>
 
-          <label for="roof-condition">Roof condition</label>
-          <select id="roof-condition" name="roof-condition" required>
-            <option value="">Select</option>
-            <option>Excellent</option>
-            <option>Good</option>
-            <option>Needs Repair</option>
-          </select>
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Tell Us About Your Home</h2>
+                
+                <form id="homeownerForm" class="space-y-4">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="homeownerName1" class="block text-sm font-medium text-gray-700 mb-2">Homeowner Name</label>
+                            <input type="text" id="homeownerName1" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandBlue focus:border-transparent">
+                        </div>
+                        <div>
+                            <label for="homeownerName2" class="block text-sm font-medium text-gray-700 mb-2">Homeowner 2 Name</label>
+                            <input type="text" id="homeownerName2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandBlue focus:border-transparent">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="homeAddress" class="block text-sm font-medium text-gray-700 mb-2">Home Address</label>
+                        <input type="text" id="homeAddress" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandBlue focus:border-transparent">
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="cellPhone" class="block text-sm font-medium text-gray-700 mb-2">Cell Phone</label>
+                            <input type="tel" id="cellPhone" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandBlue focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">We won't contact you unless you qualify</p>
+                        </div>
+                        <div>
+                            <label for="emailAddress" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                            <input type="email" id="emailAddress" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandBlue focus:border-transparent">
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between pt-6">
+                        <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors back-btn">Back</button>
+                        <button type="submit" class="bg-gradient-to-r from-brandGreen to-brandBlue hover:from-brandGreen/90 hover:to-brandBlue/90 text-white font-bold py-3 px-6 rounded-lg transition-all">Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-          <button type="submit">Calculate My Savings</button>
-        </form>
-        <p id="savings-result"></p>
-        <p>We respect your privacy. No spam. Just savings.</p>
-      </section>
+        <!-- Screen 3: Qualifications -->
+        <div id="screen3" class="screen hidden">
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Quick Qualification Check</h2>
+                
+                <!-- Progress Checklist Visual -->
+                <div class="mb-6 flex justify-center">
+                    <div class="flex space-x-2">
+                        <div id="check1" class="w-4 h-4 rounded-full bg-gray-300 transition-colors"></div>
+                        <div id="check2" class="w-4 h-4 rounded-full bg-gray-300 transition-colors"></div>
+                        <div id="check3" class="w-4 h-4 rounded-full bg-gray-300 transition-colors"></div>
+                        <div id="check4" class="w-4 h-4 rounded-full bg-gray-300 transition-colors"></div>
+                        <div id="check5" class="w-4 h-4 rounded-full bg-gray-300 transition-colors"></div>
+                    </div>
+                </div>
 
-      <section class="prequal-quiz">
-        <h1>Solar Savings, Made Simple.</h1>
-        <form id="quiz-form" action="#" method="get">
-          <div class="step active">
-            <p class="message">
-              Duke Energy keeps hiking rates. What's your ZIP so we can check local
-              savings?
-            </p>
-            <label for="quiz-zip">ZIP Code</label>
-            <input type="text" id="quiz-zip" required />
-            <button type="button" class="next">Next</button>
-          </div>
-          <div class="step">
-            <p class="message">
-              Every dollar you pay Duke leaves Greensboro. About how much is your
-              monthly electric bill?
-            </p>
-            <label for="quiz-bill">Monthly Electric Bill ($)</label>
-            <input type="number" id="quiz-bill" required />
-            <button type="button" class="next">Next</button>
-          </div>
-          <div class="step">
-            <p class="message">
-              Solar works on most roofs. What type do you have?
-            </p>
-            <label for="quiz-roof">Roof Type</label>
-            <select id="quiz-roof" required>
-              <option value="">Select</option>
-              <option>Shingle</option>
-              <option>Metal</option>
-              <option>Tile</option>
-              <option>Flat</option>
-              <option>Other</option>
-            </select>
-            <button type="button" class="next">Next</button>
-          </div>
-          <div class="step">
-            <p class="message">
-              You're a great fit! Let's lock in your savings.
-            </p>
-            <label for="quiz-name">Name</label>
-            <input type="text" id="quiz-name" required />
-            <label for="quiz-email">Email</label>
-            <input type="email" id="quiz-email" required />
-            <label for="quiz-phone">Phone</label>
-            <input type="tel" id="quiz-phone" required />
-            <button type="submit">Get My Savings</button>
-          </div>
-        </form>
-      </section>
-    </main>
+                <form id="qualificationForm" class="space-y-6">
+                    <!-- Question 1 -->
+                    <fieldset class="qualification-question" id="homeowner-fieldset">
+                        <legend id="homeowner-label" class="block text-lg font-medium text-gray-700 mb-3">Are you a homeowner?</legend>
+                        <div class="flex space-x-4" role="radiogroup" aria-labelledby="homeowner-label">
+                            <div class="flex items-center">
+                                <input type="radio" id="homeownerYes" name="homeowner" value="yes">
+                                <label for="homeownerYes" class="ml-2">Yes</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" id="homeownerNo" name="homeowner" value="no">
+                                <label for="homeownerNo" class="ml-2">No</label>
+                            </div>
+                        </div>
+                    </fieldset>
 
-    <footer>
-      <div class="trust-badges">
-        25-Year Equipment Warranty • No Upfront Costs • Locally Trusted Installers
-      </div>
-      <p>© 2024 You Power You. All rights reserved.</p>
-    </footer>
-  </body>
+                    <!-- Question 2 -->
+                    <fieldset class="qualification-question" id="taxes-fieldset">
+                        <legend id="taxes-label" class="flex items-center mb-3 text-lg font-medium text-gray-700">
+                            Do you file federal taxes?
+                            <button type="button" class="ml-2 w-5 h-5 bg-brandBlue text-white rounded-full text-xs flex items-center justify-center tooltip-btn" data-target="tax-tooltip" aria-label="More info about taxes">?</button>
+                        </legend>
+                        <div id="tax-tooltip" class="tooltip bg-gray-800 text-white p-3 rounded-lg mb-3 text-sm" role="tooltip">The net metering program requires taxable income to qualify for certain credits.</div>
+                        <div class="flex space-x-4" role="radiogroup" aria-labelledby="taxes-label">
+                            <div class="flex items-center">
+                                <input type="radio" id="taxesYes" name="taxes" value="yes">
+                                <label for="taxesYes" class="ml-2">Yes</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" id="taxesNo" name="taxes" value="no">
+                                <label for="taxesNo" class="ml-2">No</label>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Question 3 -->
+                    <fieldset class="qualification-question" id="credit-fieldset">
+                        <legend id="credit-label" class="flex items-center mb-3 text-lg font-medium text-gray-700">
+                            Is your credit score 600+?
+                            <button type="button" class="ml-2 w-5 h-5 bg-brandBlue text-white rounded-full text-xs flex items-center justify-center tooltip-btn" data-target="credit-tooltip" aria-label="More info about credit score">?</button>
+                        </legend>
+                        <div id="credit-tooltip" class="tooltip bg-gray-800 text-white p-3 rounded-lg mb-3 text-sm" role="tooltip">We do a soft check only to see if you're eligible for zero-down options.</div>
+                        <div class="flex space-x-4" role="radiogroup" aria-labelledby="credit-label">
+                            <div class="flex items-center">
+                                <input type="radio" id="creditYes" name="credit" value="yes">
+                                <label for="creditYes" class="ml-2">Yes</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" id="creditNo" name="credit" value="no">
+                                <label for="creditNo" class="ml-2">No</label>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Question 4 -->
+                    <fieldset class="qualification-question" id="roof-fieldset">
+                        <legend id="roof-label" class="flex items-center mb-3 text-lg font-medium text-gray-700">
+                            Is your roof slated or does it have panels?
+                            <button type="button" class="ml-2 w-5 h-5 bg-brandBlue text-white rounded-full text-xs flex items-center justify-center tooltip-btn" data-target="roof-tooltip" aria-label="More info about roof type">?</button>
+                        </legend>
+                        <div id="roof-tooltip" class="tooltip bg-gray-800 text-white p-3 rounded-lg mb-3 text-sm" role="tooltip">
+                            <p class="mb-2">This helps us determine which mounting brackets to use.</p>
+                            <div class="flex space-x-4">
+                                <div class="text-center">
+                                    <div class="w-16 h-12 bg-gray-600 mb-1 rounded"></div>
+                                    <span class="text-xs">Slates</span>
+                                </div>
+                                <div class="text-center">
+                                    <div class="w-16 h-12 bg-brandBlue mb-1 rounded"></div>
+                                    <span class="text-xs">Panels</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex space-x-4" role="radiogroup" aria-labelledby="roof-label">
+                            <div class="flex items-center">
+                                <input type="radio" id="roofSlated" name="roof" value="slated">
+                                <label for="roofSlated" class="ml-2">Slated</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" id="roofPanels" name="roof" value="panels">
+                                <label for="roofPanels" class="ml-2">Panels</label>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Question 5 -->
+                    <fieldset class="qualification-question" id="bill-fieldset">
+                        <legend id="bill-label" class="block text-lg font-medium text-gray-700 mb-3">Is your name on your electric bill?</legend>
+                        <div class="flex space-x-4" role="radiogroup" aria-labelledby="bill-label">
+                            <div class="flex items-center">
+                                <input type="radio" id="billYes" name="electric_bill" value="yes">
+                                <label for="billYes" class="ml-2">Yes</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" id="billNo" name="electric_bill" value="no">
+                                <label for="billNo" class="ml-2">No</label>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="flex justify-between pt-6">
+                        <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors back-btn">Back</button>
+                        <button type="submit" class="bg-gradient-to-r from-brandGreen to-brandBlue hover:from-brandGreen/90 hover:to-brandBlue/90 text-white font-bold py-3 px-6 rounded-lg transition-all">Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Screen 4: Energy Efficiency Upgrades -->
+        <div id="screen4" class="screen hidden">
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Recent Energy Upgrades</h2>
+                <p class="text-lg text-gray-600 mb-8 text-center">Have you had any of the following in the last 12 months?</p>
+                
+                <form id="upgradesForm">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="insulation" aria-pressed="false">
+                            <div class="text-3xl mb-2">🏠</div>
+                            <div class="text-sm font-medium">Insulation</div>
+                        </button>
+                        <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="windows" aria-pressed="false">
+                            <div class="text-3xl mb-2">🪟</div>
+                            <div class="text-sm font-medium">Windows</div>
+                        </button>
+                        <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="water_heater" aria-pressed="false">
+                            <div class="text-3xl mb-2">🚿</div>
+                            <div class="text-sm font-medium">Water Heater</div>
+                        </button>
+                        <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="hvac" aria-pressed="false">
+                            <div class="text-3xl mb-2">❄️</div>
+                            <div class="text-sm font-medium">HVAC</div>
+                        </button>
+                        <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="heat_pump" aria-pressed="false">
+                            <div class="text-3xl mb-2">🔥</div>
+                            <div class="text-sm font-medium">Heat Pump</div>
+                        </button>
+                        <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="pool" aria-pressed="false">
+                            <div class="text-3xl mb-2">🏊</div>
+                            <div class="text-sm font-medium">Pool</div>
+                        </button>
+                        <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="pool_pump" aria-pressed="false">
+                            <div class="text-3xl mb-2">⚡</div>
+                            <div class="text-sm font-medium">Pool Pump</div>
+                        </button>
+                        <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="thermostat" aria-pressed="false">
+                            <div class="text-3xl mb-2">🌡️</div>
+                            <div class="text-sm font-medium">Smart Thermostat</div>
+                        </button>
+                        <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="washer" aria-pressed="false">
+                            <div class="text-3xl mb-2">👕</div>
+                            <div class="text-sm font-medium">Washer</div>
+                        </button>
+                        <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="dryer" aria-pressed="false">
+                            <div class="text-3xl mb-2">🌪️</div>
+                            <div class="text-sm font-medium">Dryer</div>
+                        </button>
+                        <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="fridge" aria-pressed="false">
+                            <div class="text-3xl mb-2">🧊</div>
+                            <div class="text-sm font-medium">Fridge</div>
+                        </button>
+                        <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="freezer" aria-pressed="false">
+                            <div class="text-3xl mb-2">🥶</div>
+                            <div class="text-sm font-medium">Freezer</div>
+                        </button>
+                        <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="led_lights" aria-pressed="false">
+                            <div class="text-3xl mb-2">💡</div>
+                            <div class="text-sm font-medium">LED Lights</div>
+                        </button>
+                        <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="doors" aria-pressed="false">
+                            <div class="text-3xl mb-2">🚪</div>
+                            <div class="text-sm font-medium">Doors</div>
+                        </button>
+                        <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="other" aria-pressed="false">
+                            <div class="text-3xl mb-2">❓</div>
+                            <div class="text-sm font-medium">Other</div>
+                        </button>
+                    </div>
+
+                    <div id="otherUpgradeInput" class="hidden mb-6">
+                        <label for="otherUpgrade" class="block text-sm font-medium text-gray-700 mb-2">Please specify other upgrade:</label>
+                        <input type="text" id="otherUpgrade" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandBlue focus:border-transparent">
+                    </div>
+                    
+                    <div class="flex justify-between pt-6">
+                        <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors back-btn">Back</button>
+                        <button type="submit" class="bg-gradient-to-r from-brandGreen to-brandBlue hover:from-brandGreen/90 hover:to-brandBlue/90 text-white font-bold py-3 px-6 rounded-lg transition-all">Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Screen 5: Savings Calculator -->
+        <div id="screen5" class="screen hidden">
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Estimate Your Savings</h2>
+                <p class="text-lg text-gray-600 mb-8 text-center">Enter your current electric bill and annual rate increase.</p>
+                <form id="savingsForm" class="space-y-4 mb-8">
+                    <div>
+                        <label for="monthlyBill" class="block text-sm font-medium text-gray-700 mb-2">Average Monthly Electric Bill ($)</label>
+                        <input type="number" id="monthlyBill" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandBlue focus:border-transparent">
+                    </div>
+                    <div>
+                        <label for="rateIncrease" class="block text-sm font-medium text-gray-700 mb-2">Expected Annual Utility Rate Increase (%)</label>
+                        <input type="number" id="rateIncrease" value="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandBlue focus:border-transparent">
+                    </div>
+                    <div class="flex justify-between pt-4">
+                        <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors back-btn">Back</button>
+                        <div class="space-x-2">
+                            <button type="button" id="skipCalc" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors">Skip</button>
+                            <button type="submit" class="bg-gradient-to-r from-brandGreen to-brandBlue hover:from-brandGreen/90 hover:to-brandBlue/90 text-white font-bold py-3 px-6 rounded-lg transition-all">Calculate</button>
+                        </div>
+                    </div>
+                </form>
+                <div id="savingsResult" class="hidden">
+                    <canvas id="savingsChart" height="200"></canvas>
+                    <p id="savingsNote" class="text-center mt-4 text-lg font-semibold text-brandGreen"></p>
+                    <div class="flex justify-between pt-6">
+                        <button type="button" id="recalc" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors">Back</button>
+                        <button type="button" id="calcContinue" class="bg-gradient-to-r from-brandGreen to-brandBlue hover:from-brandGreen/90 hover:to-brandBlue/90 text-white font-bold py-3 px-6 rounded-lg transition-all">Continue</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 6: Scheduling -->
+        <div id="screen6" class="screen hidden">
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <!-- Calendar Visual -->
+                <div class="mb-6 text-center">
+                    <svg viewBox="0 0 200 150" class="w-32 mx-auto mb-4" aria-hidden="true">
+                        <rect x="20" y="30" width="160" height="120" fill="white" stroke="#D1D5DB" stroke-width="2" rx="8"/>
+                        <rect x="20" y="30" width="160" height="30" fill="#1e88e5" rx="8 8 0 0"/>
+                        <text x="100" y="50" text-anchor="middle" fill="white" font-size="14" font-weight="bold">December</text>
+                        <g fill="#6B7280" font-size="10">
+                            <text x="40" y="80" text-anchor="middle">S</text>
+                            <text x="60" y="80" text-anchor="middle">M</text>
+                            <text x="80" y="80" text-anchor="middle">T</text>
+                            <text x="100" y="80" text-anchor="middle">W</text>
+                            <text x="120" y="80" text-anchor="middle">T</text>
+                            <text x="140" y="80" text-anchor="middle">F</text>
+                            <text x="160" y="80" text-anchor="middle">S</text>
+                        </g>
+                        <circle cx="80" cy="100" r="8" fill="#2c5530"/>
+                        <text x="80" y="105" text-anchor="middle" fill="white" font-size="8">15</text>
+                    </svg>
+                </div>
+
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-brandGreen mb-4">Great news — you qualify!</h2>
+                    <p class="text-lg text-gray-600">Let's find a time for your free engineering assessment.</p>
+                </div>
+
+                <form id="schedulingForm">
+                    <div class="grid md:grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <label for="scheduleDate" class="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
+                            <input type="date" id="scheduleDate" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandBlue focus:border-transparent">
+                        </div>
+                        <div>
+                            <label for="scheduleTime" class="block text-sm font-medium text-gray-700 mb-2">Select Time</label>
+                            <select id="scheduleTime" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandBlue focus:border-transparent">
+                                <option value="">Choose a time</option>
+                                <option value="9:00 AM">9:00 AM</option>
+                                <option value="10:00 AM">10:00 AM</option>
+                                <option value="11:00 AM">11:00 AM</option>
+                                <option value="1:00 PM">1:00 PM</option>
+                                <option value="2:00 PM">2:00 PM</option>
+                                <option value="3:00 PM">3:00 PM</option>
+                                <option value="4:00 PM">4:00 PM</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between pt-6">
+                        <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors back-btn">Back</button>
+                        <button type="submit" class="bg-gradient-to-r from-brandGreen to-brandBlue hover:from-brandGreen/90 hover:to-brandBlue/90 text-white font-bold py-3 px-6 rounded-lg transition-all">Schedule Assessment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Screen 7: Thank You -->
+        <div id="screen7" class="screen hidden">
+            <div class="bg-white rounded-2xl shadow-xl p-8 text-center">
+                <div class="mb-8">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-brandGreen" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Thanks, <span id="thankYouName">Friend</span>!</h2>
+                    <p class="text-lg text-gray-600 mb-8">Your engineer will review your information and confirm your appointment.</p>
+                </div>
+
+                <!-- Social Share -->
+                <div class="mb-8">
+                    <p class="text-sm text-gray-600 mb-4">Tell your neighbors:</p>
+                    <div class="flex justify-center space-x-4">
+                        <button class="bg-brandBlue hover:bg-brandBlue/90 text-white px-4 py-2 rounded-lg transition-colors">📘 Share on Facebook</button>
+                        <button class="bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 rounded-lg transition-colors">🐦 Share on Twitter</button>
+                    </div>
+                    <p class="text-sm font-medium text-brandBlue mt-2">Beat the monopoly!</p>
+                </div>
+
+                <!-- Testimonial Slider -->
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4">What Local Homeowners Say</h3>
+                    <div id="testimonialSlider" class="space-y-4">
+                        <div class="testimonial">
+                            <p class="text-gray-600 italic mb-2">"We've saved over $200 a month since going solar. Best decision we ever made!"</p>
+                            <p class="text-sm font-medium text-gray-800">- Sarah M., Greensboro</p>
+                        </div>
+                        <div class="testimonial hidden">
+                            <p class="text-gray-600 italic mb-2">"The installation was quick and professional. Our electric bill is practically zero now."</p>
+                            <p class="text-sm font-medium text-gray-800">- Mike R., High Point</p>
+                        </div>
+                        <div class="testimonial hidden">
+                            <p class="text-gray-600 italic mb-2">"Solar increased our home value and we're helping the environment. Win-win!"</p>
+                            <p class="text-sm font-medium text-gray-800">- Jennifer L., Winston-Salem</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-center mt-4 space-x-2">
+                        <button class="w-2 h-2 bg-brandBlue rounded-full testimonial-btn" data-index="0" aria-label="Show testimonial 1"></button>
+                        <button class="w-2 h-2 bg-gray-300 rounded-full testimonial-btn" data-index="1" aria-label="Show testimonial 2"></button>
+                        <button class="w-2 h-2 bg-gray-300 rounded-full testimonial-btn" data-index="2" aria-label="Show testimonial 3"></button>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button id="restartBtn" class="bg-gradient-to-r from-brandGreen to-brandBlue hover:from-brandGreen/90 hover:to-brandBlue/90 text-white font-bold py-3 px-6 rounded-lg transition-all">Start Over</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/qualify-funnel.js"></script>
+</body>
 </html>

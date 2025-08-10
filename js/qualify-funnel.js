@@ -1,6 +1,7 @@
 let currentScreen = 1;
 let selectedUpgrades = [];
 let currentTestimonial = 0;
+let savingsChart;
 
 function showScreen(index) {
   document.querySelector(`#screen${currentScreen}`).classList.add('hidden');
@@ -9,9 +10,6 @@ function showScreen(index) {
   screen.classList.remove('hidden');
   screen.classList.add('fade-in');
   updateProgressBar();
-  if (currentScreen === 6) {
-    animateCharts();
-  }
 }
 
 function nextScreen() {
@@ -65,6 +63,47 @@ function toggleUpgrade(element, upgrade) {
   }
 }
 
+function calculateSavings() {
+  const bill = parseFloat(document.getElementById('monthlyBill').value);
+  const rate = parseFloat(document.getElementById('rateIncrease').value) / 100 || 0;
+  const years = Array.from({ length: 20 }, (_, i) => i + 1);
+  let duke = [];
+  let solar = [];
+  let dukeTotal = 0;
+  let solarTotal = 0;
+  years.forEach((year, i) => {
+    const annualBill = bill * 12 * Math.pow(1 + rate, i);
+    dukeTotal += annualBill;
+    duke.push(Math.round(dukeTotal));
+    const solarAnnual = bill * 12 * 0.2;
+    solarTotal += solarAnnual;
+    solar.push(Math.round(solarTotal));
+  });
+  const savings = duke[duke.length - 1] - solar[solar.length - 1];
+  const ctx = document.getElementById('savingsChart').getContext('2d');
+  if (savingsChart) savingsChart.destroy();
+  savingsChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: years,
+      datasets: [
+        { label: 'Duke Energy', data: duke, borderColor: '#EF4444', fill: false },
+        { label: 'Solar', data: solar, borderColor: '#2c5530', fill: false }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { title: { display: true, text: 'Years' } },
+        y: { title: { display: true, text: 'Cumulative Cost ($)' } }
+      }
+    }
+  });
+  document.getElementById('savingsNote').textContent = `Estimated 20-year savings: $${savings.toLocaleString()}`;
+  document.getElementById('savingsForm').classList.add('hidden');
+  document.getElementById('savingsResult').classList.remove('hidden');
+}
+
 function showTestimonial(index) {
   const testimonials = document.querySelectorAll('.testimonial');
   const buttons = document.querySelectorAll('.testimonial-btn');
@@ -94,14 +133,9 @@ function restartFunnel() {
     icon.setAttribute('aria-pressed', 'false');
   });
   document.querySelectorAll('.tooltip').forEach(t => t.classList.remove('show'));
-}
-
-function animateCharts() {
-  document.querySelectorAll('.chart-bar').forEach((bar, index) => {
-    setTimeout(() => {
-      bar.style.height = bar.style.height;
-    }, index * 200);
-  });
+  document.getElementById('savingsResult').classList.add('hidden');
+  document.getElementById('savingsForm').classList.remove('hidden');
+  if (savingsChart) savingsChart.destroy();
 }
 
 // Event bindings
@@ -111,13 +145,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('startBtn').addEventListener('click', nextScreen);
   document.querySelectorAll('.back-btn').forEach(btn => btn.addEventListener('click', prevScreen));
-  document.getElementById('vizContinue').addEventListener('click', nextScreen);
   document.getElementById('restartBtn').addEventListener('click', restartFunnel);
 
   document.getElementById('homeownerForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
   document.getElementById('qualificationForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
   document.getElementById('upgradesForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
   document.getElementById('schedulingForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
+  document.getElementById('savingsForm').addEventListener('submit', e => { e.preventDefault(); calculateSavings(); });
+  document.getElementById('skipCalc').addEventListener('click', nextScreen);
+  document.getElementById('calcContinue').addEventListener('click', nextScreen);
+  document.getElementById('recalc').addEventListener('click', () => {
+    document.getElementById('savingsResult').classList.add('hidden');
+    document.getElementById('savingsForm').classList.remove('hidden');
+  });
 
   document.querySelectorAll('#qualificationForm input[type="radio"]').forEach(input => {
     input.addEventListener('change', updateProgress);
