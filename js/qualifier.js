@@ -2,8 +2,7 @@ let currentScreen = 1;
 let selectedUpgrades = [];
 let currentTestimonial = 0;
 let savingsChart;
-let panoramaInner;
-let movingSun;
+let progressSun;
 
 function showScreen(index) {
   document.querySelector(`#screen${currentScreen}`).classList.add('hidden');
@@ -27,18 +26,15 @@ function prevScreen() {
 function updateProgressBar() {
   const totalScreens = 7;
   const progress = (currentScreen / totalScreens) * 100;
-  document.getElementById('progressBar').style.width = progress + '%';
+  const bar = document.getElementById('progressBar');
+  bar.style.width = progress + '%';
   document.getElementById('currentStep').textContent = currentScreen;
 
-  // Update the low-horizon panorama and moving sun based on progress.
-  // The panorama container is four times the width of the viewport (400%),
-  // so shifting it by up to 75% gives a smooth scroll through the segments.
-  const progressRatio = (currentScreen - 1) / (totalScreens - 1);
-  if (panoramaInner) {
-    panoramaInner.style.transform = 'translateX(' + (-progressRatio * 75) + '%)';
-  }
-  if (movingSun) {
-    movingSun.style.left = (progressRatio * 90) + 'vw';
+  if (progressSun) {
+    const container = bar.parentElement;
+    const maxLeft = container.offsetWidth - progressSun.offsetWidth;
+    const ratio = (currentScreen - 1) / (totalScreens - 1);
+    progressSun.style.left = maxLeft * ratio + 'px';
   }
 }
 
@@ -77,6 +73,13 @@ function toggleUpgrade(element, upgrade) {
   }
 }
 
+function renderMarkdown(elementId, markdown) {
+  const html = markdown
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1<\/strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1<\/em>');
+  document.getElementById(elementId).innerHTML = html;
+}
+
 function calculateSavings() {
   const bill = parseFloat(document.getElementById('monthlyBill').value);
   const rate = parseFloat(document.getElementById('rateIncrease').value) / 100 || 0;
@@ -89,7 +92,7 @@ function calculateSavings() {
     const annualBill = bill * 12 * Math.pow(1 + rate, i);
     dukeTotal += annualBill;
     duke.push(Math.round(dukeTotal));
-    const solarAnnual = bill * 12 * 0.2;
+    const solarAnnual = bill * 12 * 0.2 * Math.pow(1 + rate, i);
     solarTotal += solarAnnual;
     solar.push(Math.round(solarTotal));
   });
@@ -113,7 +116,7 @@ function calculateSavings() {
       }
     }
   });
-  document.getElementById('savingsNote').textContent = `Estimated 20-year savings: $${savings.toLocaleString()}`;
+  renderMarkdown('savingsNote', `Estimated 20-year savings: **$${savings.toLocaleString()}**`);
   document.getElementById('savingsForm').classList.add('hidden');
   document.getElementById('savingsResult').classList.remove('hidden');
 }
@@ -129,13 +132,13 @@ function showTestimonial(index) {
     }
   });
   buttons.forEach((b, i) => {
-    b.classList.toggle('bg-brandBlue', i === index);
+    b.classList.toggle('bg-brandOrange', i === index);
     b.classList.toggle('bg-gray-300', i !== index);
   });
   currentTestimonial = index;
 }
 
-function restartFunnel() {
+function restartQualifier() {
   currentScreen = 1;
   document.querySelectorAll('.screen').forEach(screen => screen.classList.add('hidden'));
   document.getElementById('screen1').classList.remove('hidden');
@@ -155,16 +158,12 @@ function restartFunnel() {
 // Event bindings
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Elements controlling the animated panorama and moving sun.
-  // These may not exist on pages that omit the panorama, so guard accordingly when used.
-  panoramaInner = document.getElementById('panoramaInner');
-  movingSun = document.getElementById('movingSun');
-
+  progressSun = document.getElementById('progressSun');
   updateProgressBar();
 
   document.getElementById('startBtn').addEventListener('click', nextScreen);
   document.querySelectorAll('.back-btn').forEach(btn => btn.addEventListener('click', prevScreen));
-  document.getElementById('restartBtn').addEventListener('click', restartFunnel);
+  document.getElementById('restartBtn').addEventListener('click', restartQualifier);
 
   document.getElementById('homeownerForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
   document.getElementById('qualificationForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
