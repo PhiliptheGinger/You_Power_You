@@ -73,6 +73,13 @@ function toggleUpgrade(element, upgrade) {
   }
 }
 
+function renderMarkdown(elementId, markdown) {
+  const html = markdown
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1<\/strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1<\/em>');
+  document.getElementById(elementId).innerHTML = html;
+}
+
 function calculateSavings() {
   const bill = parseFloat(document.getElementById('monthlyBill').value);
   const rate = parseFloat(document.getElementById('rateIncrease').value) / 100 || 0;
@@ -85,7 +92,7 @@ function calculateSavings() {
     const annualBill = bill * 12 * Math.pow(1 + rate, i);
     dukeTotal += annualBill;
     duke.push(Math.round(dukeTotal));
-    const solarAnnual = bill * 12 * 0.2;
+    const solarAnnual = bill * 12 * 0.2 * Math.pow(1 + rate, i);
     solarTotal += solarAnnual;
     solar.push(Math.round(solarTotal));
   });
@@ -109,7 +116,7 @@ function calculateSavings() {
       }
     }
   });
-  document.getElementById('savingsNote').textContent = `Estimated 20-year savings: $${savings.toLocaleString()}`;
+  renderMarkdown('savingsNote', `Estimated 20-year savings: **$${savings.toLocaleString()}**`);
   document.getElementById('savingsForm').classList.add('hidden');
   document.getElementById('savingsResult').classList.remove('hidden');
 }
