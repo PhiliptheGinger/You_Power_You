@@ -80,90 +80,189 @@ function toggleUpgrade(element, upgrade) {
     pressed ? otherInput.classList.remove('hidden') : otherInput.classList.add('hidden');
   }
 }
+// ---- Savings Calculator (NC rate path, no user-entered % needed) ----
+const NC_RATE_STEPS = [
+  { year: 1, pct: 0.083 },
+  { year: 2, pct: 0.033 },
+  { year: 3, pct: 0.031 }
+];
+const POST_TREND = 0.03;
+const HORIZON_YEARS = 20;
 
-function projectNoSolarAnnuals(monthlyBill, rateIncreasePct, rateHikeSchedule, termYears) {
-  const annuals = [];
-  let cumulative = 1;
-  for (let y = 0; y < termYears; y++) {
-    const r = (rateHikeSchedule && rateHikeSchedule[y] != null)
-      ? rateHikeSchedule[y] / 100
-      : rateIncreasePct / 100;
-    cumulative *= (1 + r);
-    annuals.push(monthlyBill * 12 * cumulative);
-  }
-  return annuals;
-}
+function buildSeries(startMonthly) {
+  const years = [];
+  const trend = [];
+  const flat = [];
+  let monthly = startMonthly;
 
-function projectWithSolarAnnuals(opts) {
-  const {
-    monthlyBill,
-    annualUsageKWh,
-    rateIncreasePct,
-    rateHikeSchedule,
-    termYears,
-    baseFixedFeeUsd,
-    fixedEscalationPct,
-    offsetPct
-  } = opts;
-
-  const withSolar = [];
-
-  const hasUsage = !!annualUsageKWh && annualUsageKWh > 0;
-  const energyPortion = hasUsage ? Math.max(monthlyBill - baseFixedFeeUsd, 0) : monthlyBill;
-  let fixedYearly = baseFixedFeeUsd * 12;
-  let cumulativeEnergyEscalation = 1;
-
-  for (let y = 0; y < termYears; y++) {
-    const r = (rateHikeSchedule && rateHikeSchedule[y] != null)
-      ? rateHikeSchedule[y] / 100
-      : rateIncreasePct / 100;
-    cumulativeEnergyEscalation *= (1 + r);
-    const energyY = energyPortion * 12 * cumulativeEnergyEscalation;
-    if (y > 0) fixedYearly *= (1 + fixedEscalationPct);
-    const avoidedY = energyY * offsetPct;
-    const withSolarY = (energyY - avoidedY) + fixedYearly;
-    withSolar.push(withSolarY);
-  }
-
-  return withSolar;
-}
-
-function computeSavingsNote(noSolarAnnuals, withSolarAnnuals) {
-  const reduce = arr => arr.reduce((a, b) => a + b, 0);
-  const totalNoSolar = reduce(noSolarAnnuals);
-  const totalWith = reduce(withSolarAnnuals);
-  const markdownTotal = Math.max(totalNoSolar - totalWith, 0);
-  return {
-    totalNoSolar,
-    totalWith,
-    markdownTotal,
-    text: `Projected ${CONFIG.termYears}-year markdown (avoided utility hikes): $${markdownTotal.toLocaleString()}`
-  };
-}
-
-function renderSavingsChart(noSolar, withSolar) {
-  const ctx = document.getElementById('savingsChart').getContext('2d');
-  const labels = Array.from({ length: CONFIG.termYears }, (_, i) => `Year ${i + 1}`);
-  if (savingsChartInstance) savingsChartInstance.destroy();
-  savingsChartInstance = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        { label: 'No Solar', data: noSolar, borderColor: '#EF4444', fill: false },
-        { label: 'With Solar (markdown applied)', data: withSolar, borderColor: '#2c5530', fill: false }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      scales: {
-        y: { ticks: { callback: v => `$${Number(v).toLocaleString()}` } }
+  for (let y = 0; y <= HORIZON_YEARS; y++) {
+    years.push(y);
+    flat.push(startMonthly * 12);
+    if (y > 0) {
+      const step = NC_RATE_STEPS.find(s => s.year === y);
+      if (step) {
+        monthly = monthly * (1 + step.pct);
+      } else if (y > 3) {
+        monthly = monthly * (1 + POST_TREND);
       }
     }
-  });
+    trend.push(monthly * 12);
+  }
+
+  return { years, trend, flat };
 }
+
+function formatCurrency(v) {
+  return '$' + Math.round(v).toLocaleString();
+}
+
+(function initSavings() {
+  const form = document.getElementById('savingsForm');
+  const inputBill = document.getElementById('monthlyBill');
+  const resultWrap = document.getElementById('savingsResult');
+  const note = document.getElementById('savingsNote');
+  const recalcBtn = document.getElementById('recalc');
+  const continueBtn = document.getElementById('calcContinue');
+  const skipBtn = document.getElementById('skipCalc');
+  const ctx = document.getElementById('savingsChart').getContext('2d');
+
+  let chart;
+
+  function buildAnnotations() {
+    const ann = {};
+
+    [1, 2, 3].forEach((yr, i) => {
+      ann['inflect_' + yr] = {
+        type: 'line',
+        xMin: yr,
+        xMax: yr,
+        borderColor: 'rgba(44,85,48,0.25)',
+        borderWidth: 2,
+        borderDash: i === 0 ? [] : [4, 4],
+        label: {
+          enabled: true,
+          content: `Y${yr} step`,
+          position: 'start',
+          backgroundColor: 'rgba(44,85,48,0.08)',
+          color: '#2c5530',
+          font: { weight: '600' }
+        }
+      };
+    });
+
+    [5, 10, 15, 20].forEach(yr => {
+      ann['mark_' + yr] = {
+        type: 'label',
+        xValue: yr,
+        yValue: 0,
+        backgroundColor: 'rgba(0,0,0,0)',
+        content: [`${yr}y`],
+        color: '#6b7280',
+        font: { size: 11 }
+      };
+    });
+
+    return ann;
+  }
+
+  function renderChart(series) {
+    const dataYears = series.years;
+    const dataTrend = series.trend;
+    const dataFlat = series.flat;
+
+    const totalTrend = dataTrend.reduce((a, b) => a + b, 0);
+    const totalFlat = dataFlat.reduce((a, b) => a + b, 0);
+    const delta = totalTrend - totalFlat;
+    note.textContent = `20‑year exposure difference: ${formatCurrency(delta)} (trend vs. flat).`;
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: dataYears,
+        datasets: [
+          {
+            label: 'Current trend',
+            data: dataTrend,
+            fill: 'origin',
+            borderColor: '#2c5530',
+            backgroundColor: 'rgba(44,85,48,0.18)',
+            tension: 0.25,
+            borderWidth: 2,
+            pointRadius: ctx => {
+              const x = ctx.dataIndex;
+              return (x === 5 || x === 10 || x === 15 || x === 20) ? 4 : 0;
+            },
+            pointBackgroundColor: '#2c5530'
+          },
+          {
+            label: 'Assuming Duke never raises rates again',
+            data: dataFlat,
+            fill: true,
+            borderColor: '#ff914d',
+            backgroundColor: 'rgba(255,145,77,0.15)',
+            tension: 0.25,
+            borderWidth: 2,
+            pointRadius: ctx => {
+              const x = ctx.dataIndex;
+              return (x === 5 || x === 10 || x === 15 || x === 20) ? 3 : 0;
+            },
+            pointBackgroundColor: '#ff914d'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: {
+            callbacks: {
+              label: tt => `${tt.dataset.label}: ${formatCurrency(tt.parsed.y)} / yr`
+            }
+          },
+          annotation: {
+            annotations: buildAnnotations()
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: 'Years' },
+            ticks: { callback: v => v }
+          },
+          y: {
+            title: { display: true, text: 'Annual Cost ($)' },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    resultWrap.classList.remove('hidden');
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const bill = Number(inputBill.value);
+    if (!bill || bill < 10) return;
+    const series = buildSeries(bill);
+    renderChart(series);
+  });
+
+  skipBtn.addEventListener('click', () => {
+    const series = buildSeries(150);
+    renderChart(series);
+  });
+
+  recalcBtn.addEventListener('click', () => {
+    resultWrap.classList.add('hidden');
+  });
+
+  continueBtn.addEventListener('click', () => {
+    nextScreen();
+  });
+})();
 
 function showTestimonial(index) {
   const testimonials = document.querySelectorAll('.testimonial');
@@ -196,9 +295,7 @@ function restartQualifier() {
   document.querySelectorAll('.tooltip').forEach(t => t.classList.remove('show'));
   document.getElementById('savingsResult').classList.add('hidden');
   document.getElementById('savingsForm').classList.remove('hidden');
-  document.getElementById('usageReminder').classList.add('hidden');
   document.getElementById('savingsNote').classList.add('hidden');
-  if (savingsChartInstance) savingsChartInstance.destroy();
 }
 
 // Event bindings
@@ -215,52 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('qualificationForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
   document.getElementById('upgradesForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
   document.getElementById('schedulingForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
-  document.getElementById('savingsForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const monthlyBill = Number(document.getElementById('monthlyBill').value || 0);
-    const rateIncrease = Number(document.getElementById('rateIncrease').value || 0);
-    const annualUsageKWh = Number(document.getElementById('annualUsageKWh')?.value || 0) || null;
-
-    const noSolar = projectNoSolarAnnuals(
-      monthlyBill,
-      rateIncrease,
-      CONFIG.rateHikeSchedule,
-      CONFIG.termYears
-    );
-
-    const withSolar = projectWithSolarAnnuals({
-      monthlyBill,
-      annualUsageKWh,
-      rateIncreasePct: rateIncrease,
-      rateHikeSchedule: CONFIG.rateHikeSchedule,
-      termYears: CONFIG.termYears,
-      baseFixedFeeUsd: CONFIG.baseFixedFeeUsd,
-      fixedEscalationPct: CONFIG.fixedEscalationPct,
-      offsetPct: CONFIG.offsetPct
-    });
-
-    renderSavingsChart(noSolar, withSolar);
-    const { text } = computeSavingsNote(noSolar, withSolar);
-    const noteEl = document.getElementById('savingsNote');
-    noteEl.textContent = text;
-    noteEl.classList.remove('hidden');
-    const reminderEl = document.getElementById('usageReminder');
-    if (!annualUsageKWh) {
-      reminderEl.classList.remove('hidden');
-    } else {
-      reminderEl.classList.add('hidden');
-    }
-    document.getElementById('savingsForm').classList.add('hidden');
-    document.getElementById('savingsResult').classList.remove('hidden');
-  });
-  document.getElementById('skipCalc').addEventListener('click', nextScreen);
-  document.getElementById('calcContinue').addEventListener('click', nextScreen);
-  document.getElementById('recalc').addEventListener('click', () => {
-    document.getElementById('savingsResult').classList.add('hidden');
-    document.getElementById('savingsForm').classList.remove('hidden');
-    document.getElementById('usageReminder').classList.add('hidden');
-    document.getElementById('savingsNote').classList.add('hidden');
-  });
 
   document.querySelectorAll('#qualificationForm input[type="radio"]').forEach(input => {
     input.addEventListener('change', updateProgress);
