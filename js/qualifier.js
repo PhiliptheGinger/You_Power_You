@@ -132,7 +132,7 @@ function showTestimonial(index) {
     }
   });
   buttons.forEach((b, i) => {
-    b.classList.toggle('bg-brandBlue', i === index);
+    b.classList.toggle('bg-brandOrange', i === index);
     b.classList.toggle('bg-gray-300', i !== index);
   });
   currentTestimonial = index;
