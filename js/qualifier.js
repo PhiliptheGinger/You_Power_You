@@ -1,8 +1,16 @@
 let currentScreen = 1;
 let selectedUpgrades = [];
 let currentTestimonial = 0;
-let savingsChart;
 let progressSun;
+let savingsChartInstance = null;
+
+const CONFIG = {
+  termYears: 25,
+  baseFixedFeeUsd: 25,
+  fixedEscalationPct: 0.02,
+  offsetPct: 0.90,
+  rateHikeSchedule: null
+};
 
 function showScreen(index) {
   document.querySelector(`#screen${currentScreen}`).classList.add('hidden');
@@ -73,52 +81,88 @@ function toggleUpgrade(element, upgrade) {
   }
 }
 
-function renderMarkdown(elementId, markdown) {
-  const html = markdown
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1<\/strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1<\/em>');
-  document.getElementById(elementId).innerHTML = html;
+function projectNoSolarAnnuals(monthlyBill, rateIncreasePct, rateHikeSchedule, termYears) {
+  const annuals = [];
+  let cumulative = 1;
+  for (let y = 0; y < termYears; y++) {
+    const r = (rateHikeSchedule && rateHikeSchedule[y] != null)
+      ? rateHikeSchedule[y] / 100
+      : rateIncreasePct / 100;
+    cumulative *= (1 + r);
+    annuals.push(monthlyBill * 12 * cumulative);
+  }
+  return annuals;
 }
 
-function calculateSavings() {
-  const bill = parseFloat(document.getElementById('monthlyBill').value);
-  const rate = parseFloat(document.getElementById('rateIncrease').value) / 100 || 0;
-  const years = Array.from({ length: 20 }, (_, i) => i + 1);
-  let duke = [];
-  let solar = [];
-  let dukeTotal = 0;
-  let solarTotal = 0;
-  years.forEach((year, i) => {
-    const annualBill = bill * 12 * Math.pow(1 + rate, i);
-    dukeTotal += annualBill;
-    duke.push(Math.round(dukeTotal));
-    const solarAnnual = bill * 12 * 0.2 * Math.pow(1 + rate, i);
-    solarTotal += solarAnnual;
-    solar.push(Math.round(solarTotal));
-  });
-  const savings = duke[duke.length - 1] - solar[solar.length - 1];
+function projectWithSolarAnnuals(opts) {
+  const {
+    monthlyBill,
+    annualUsageKWh,
+    rateIncreasePct,
+    rateHikeSchedule,
+    termYears,
+    baseFixedFeeUsd,
+    fixedEscalationPct,
+    offsetPct
+  } = opts;
+
+  const withSolar = [];
+
+  const hasUsage = !!annualUsageKWh && annualUsageKWh > 0;
+  const energyPortion = hasUsage ? Math.max(monthlyBill - baseFixedFeeUsd, 0) : monthlyBill;
+  let fixedYearly = baseFixedFeeUsd * 12;
+  let cumulativeEnergyEscalation = 1;
+
+  for (let y = 0; y < termYears; y++) {
+    const r = (rateHikeSchedule && rateHikeSchedule[y] != null)
+      ? rateHikeSchedule[y] / 100
+      : rateIncreasePct / 100;
+    cumulativeEnergyEscalation *= (1 + r);
+    const energyY = energyPortion * 12 * cumulativeEnergyEscalation;
+    if (y > 0) fixedYearly *= (1 + fixedEscalationPct);
+    const avoidedY = energyY * offsetPct;
+    const withSolarY = (energyY - avoidedY) + fixedYearly;
+    withSolar.push(withSolarY);
+  }
+
+  return withSolar;
+}
+
+function computeSavingsNote(noSolarAnnuals, withSolarAnnuals) {
+  const reduce = arr => arr.reduce((a, b) => a + b, 0);
+  const totalNoSolar = reduce(noSolarAnnuals);
+  const totalWith = reduce(withSolarAnnuals);
+  const markdownTotal = Math.max(totalNoSolar - totalWith, 0);
+  return {
+    totalNoSolar,
+    totalWith,
+    markdownTotal,
+    text: `Projected ${CONFIG.termYears}-year markdown (avoided utility hikes): $${markdownTotal.toLocaleString()}`
+  };
+}
+
+function renderSavingsChart(noSolar, withSolar) {
   const ctx = document.getElementById('savingsChart').getContext('2d');
-  if (savingsChart) savingsChart.destroy();
-  savingsChart = new Chart(ctx, {
+  const labels = Array.from({ length: CONFIG.termYears }, (_, i) => `Year ${i + 1}`);
+  if (savingsChartInstance) savingsChartInstance.destroy();
+  savingsChartInstance = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: years,
+      labels,
       datasets: [
-        { label: 'Duke Energy', data: duke, borderColor: '#EF4444', fill: false },
-        { label: 'Solar', data: solar, borderColor: '#2c5530', fill: false }
+        { label: 'No Solar', data: noSolar, borderColor: '#EF4444', fill: false },
+        { label: 'With Solar (markdown applied)', data: withSolar, borderColor: '#2c5530', fill: false }
       ]
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
       scales: {
-        x: { title: { display: true, text: 'Years' } },
-        y: { title: { display: true, text: 'Cumulative Cost ($)' } }
+        y: { ticks: { callback: v => `$${Number(v).toLocaleString()}` } }
       }
     }
   });
-  renderMarkdown('savingsNote', `Estimated 20-year savings: **$${savings.toLocaleString()}**`);
-  document.getElementById('savingsForm').classList.add('hidden');
-  document.getElementById('savingsResult').classList.remove('hidden');
 }
 
 function showTestimonial(index) {
@@ -152,7 +196,9 @@ function restartQualifier() {
   document.querySelectorAll('.tooltip').forEach(t => t.classList.remove('show'));
   document.getElementById('savingsResult').classList.add('hidden');
   document.getElementById('savingsForm').classList.remove('hidden');
-  if (savingsChart) savingsChart.destroy();
+  document.getElementById('usageReminder').classList.add('hidden');
+  document.getElementById('savingsNote').classList.add('hidden');
+  if (savingsChartInstance) savingsChartInstance.destroy();
 }
 
 // Event bindings
@@ -169,12 +215,51 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('qualificationForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
   document.getElementById('upgradesForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
   document.getElementById('schedulingForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
-  document.getElementById('savingsForm').addEventListener('submit', e => { e.preventDefault(); calculateSavings(); });
+  document.getElementById('savingsForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const monthlyBill = Number(document.getElementById('monthlyBill').value || 0);
+    const rateIncrease = Number(document.getElementById('rateIncrease').value || 0);
+    const annualUsageKWh = Number(document.getElementById('annualUsageKWh')?.value || 0) || null;
+
+    const noSolar = projectNoSolarAnnuals(
+      monthlyBill,
+      rateIncrease,
+      CONFIG.rateHikeSchedule,
+      CONFIG.termYears
+    );
+
+    const withSolar = projectWithSolarAnnuals({
+      monthlyBill,
+      annualUsageKWh,
+      rateIncreasePct: rateIncrease,
+      rateHikeSchedule: CONFIG.rateHikeSchedule,
+      termYears: CONFIG.termYears,
+      baseFixedFeeUsd: CONFIG.baseFixedFeeUsd,
+      fixedEscalationPct: CONFIG.fixedEscalationPct,
+      offsetPct: CONFIG.offsetPct
+    });
+
+    renderSavingsChart(noSolar, withSolar);
+    const { text } = computeSavingsNote(noSolar, withSolar);
+    const noteEl = document.getElementById('savingsNote');
+    noteEl.textContent = text;
+    noteEl.classList.remove('hidden');
+    const reminderEl = document.getElementById('usageReminder');
+    if (!annualUsageKWh) {
+      reminderEl.classList.remove('hidden');
+    } else {
+      reminderEl.classList.add('hidden');
+    }
+    document.getElementById('savingsForm').classList.add('hidden');
+    document.getElementById('savingsResult').classList.remove('hidden');
+  });
   document.getElementById('skipCalc').addEventListener('click', nextScreen);
   document.getElementById('calcContinue').addEventListener('click', nextScreen);
   document.getElementById('recalc').addEventListener('click', () => {
     document.getElementById('savingsResult').classList.add('hidden');
     document.getElementById('savingsForm').classList.remove('hidden');
+    document.getElementById('usageReminder').classList.add('hidden');
+    document.getElementById('savingsNote').classList.add('hidden');
   });
 
   document.querySelectorAll('#qualificationForm input[type="radio"]').forEach(input => {
