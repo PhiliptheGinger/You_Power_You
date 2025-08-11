@@ -39,17 +39,15 @@
         .tooltip.show { visibility: visible; opacity: 1; }
         .upgrade-icon { transition: all 0.3s ease; }
         .upgrade-icon.selected { background-color: #2c5530; color: white; transform: scale(1.05); }
-        .chart-bar { transition: height 0.8s ease-in-out; }
-        .savings-line { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: drawLine 2s ease-in-out forwards; }
-        @keyframes drawLine { to { stroke-dashoffset: 0; } }
     </style>
 </head>
 <body class="bg-gradient-to-br from-brandBlue to-brandGreen min-h-screen font-sans">
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <!-- Progress Bar -->
-        <div class="mb-8">
-            <div class="bg-gray-200 rounded-full h-2">
+        <div class="mb-8 p-4 rounded-2xl bg-white">
+            <div class="relative bg-gray-200 rounded-full h-2">
                 <div id="progressBar" class="bg-gradient-to-r from-brandGreen to-brandBlue h-2 rounded-full progress-bar" style="width: 14.3%"></div>
+                <img id="progressSun" src="assets/spliced_social_icons/solar.png" alt="Sun" class="absolute -top-2 left-0 w-6 h-6 transition-all duration-500">
             </div>
             <div class="text-center mt-2 text-sm text-gray-600">
                 Step <span id="currentStep">1</span> of 7
@@ -61,31 +59,7 @@
             <div class="text-center bg-white rounded-2xl shadow-xl p-8 md:p-12">
                 <!-- Solar Home Visual -->
                 <div class="mb-8">
-                    <svg viewBox="0 0 400 200" class="w-full max-w-md mx-auto" aria-hidden="true">
-                        <!-- House -->
-                        <rect x="100" y="120" width="200" height="80" fill="#8B4513" stroke="#654321" stroke-width="2"/>
-                        <!-- Roof -->
-                        <polygon points="80,120 200,60 320,120" fill="#4A5568" stroke="#2D3748" stroke-width="2"/>
-                        <!-- Solar Panels -->
-                        <rect x="120" y="80" width="30" height="20" fill="#1E40AF" stroke="#1E3A8A" stroke-width="1"/>
-                        <rect x="160" y="80" width="30" height="20" fill="#1E40AF" stroke="#1E3A8A" stroke-width="1"/>
-                        <rect x="200" y="80" width="30" height="20" fill="#1E40AF" stroke="#1E3A8A" stroke-width="1"/>
-                        <rect x="240" y="80" width="30" height="20" fill="#1E40AF" stroke="#1E3A8A" stroke-width="1"/>
-                        <!-- Door -->
-                        <rect x="180" y="160" width="40" height="40" fill="#8B4513"/>
-                        <!-- Windows -->
-                        <rect x="130" y="140" width="25" height="25" fill="#87CEEB"/>
-                        <rect x="245" y="140" width="25" height="25" fill="#87CEEB"/>
-                        <!-- Upward Arrow Graph -->
-                        <g transform="translate(320, 100)">
-                            <line x1="0" y1="60" x2="60" y2="60" stroke="#2c5530" stroke-width="3"/>
-                            <line x1="0" y1="60" x2="0" y2="0" stroke="#2c5530" stroke-width="3"/>
-                            <polyline points="10,50 20,40 30,35 40,25 50,15" fill="none" stroke="#2c5530" stroke-width="3"/>
-                            <polygon points="45,10 55,15 50,25" fill="#2c5530"/>
-                        </g>
-                        <!-- Sun -->
-                        <circle cx="350" cy="30" r="20" fill="#FCD34D"/>
-                    </svg>
+                    <img src="assets/house-icon.png" alt="House icon" class="w-40 mx-auto" />
                 </div>
                 
                 <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Check Your Solar Savings in Minutes</h1>
@@ -99,23 +73,7 @@
             <div class="bg-white rounded-2xl shadow-xl p-8">
                 <!-- Greensboro Skyline Visual -->
                 <div class="mb-6">
-                    <svg viewBox="0 0 400 100" class="w-full max-w-lg mx-auto" aria-hidden="true">
-                        <!-- Skyline shapes -->
-                        <rect x="50" y="60" width="20" height="40" fill="#4A5568"/>
-                        <rect x="80" y="40" width="25" height="60" fill="#2D3748"/>
-                        <rect x="115" y="50" width="20" height="50" fill="#4A5568"/>
-                        <rect x="145" y="35" width="30" height="65" fill="#2D3748"/>
-                        <rect x="185" y="55" width="20" height="45" fill="#4A5568"/>
-                        <rect x="215" y="45" width="25" height="55" fill="#2D3748"/>
-                        <rect x="250" y="60" width="20" height="40" fill="#4A5568"/>
-                        <rect x="280" y="50" width="25" height="50" fill="#2D3748"/>
-                        <rect x="315" y="65" width="20" height="35" fill="#4A5568"/>
-                        <!-- Map Pin -->
-                        <g transform="translate(200, 20)">
-                            <circle cx="0" cy="0" r="8" fill="#EF4444"/>
-                            <polygon points="0,-8 -6,8 6,8" fill="#EF4444"/>
-                        </g>
-                    </svg>
+                    <img src="assets/city-icon.png" alt="City icon" class="w-40 mx-auto" />
                 </div>
 
                 <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Tell Us About Your Home</h2>
@@ -290,63 +248,63 @@
                 <form id="upgradesForm">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="insulation" aria-pressed="false">
-                            <img src="assets/illustrations/insulation_new.png" alt="Insulation" class="w-12 h-12 mx-auto mb-2" />
+                            <img src="assets/spliced_energy_icons_final/insulation.png" alt="Insulation" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Insulation</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="windows" aria-pressed="false">
-                            <div class="text-3xl mb-2">🪟</div>
+                            <img src="assets/spliced_energy_icons_final/windows.png" alt="Windows" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Windows</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="water_heater" aria-pressed="false">
-                            <div class="text-3xl mb-2">🚿</div>
+                            <img src="assets/spliced_energy_icons_final/question.png" alt="Water Heater" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Water Heater</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="hvac" aria-pressed="false">
-                            <div class="text-3xl mb-2">❄️</div>
+                            <img src="assets/spliced_energy_icons_final/hvac.png" alt="HVAC" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">HVAC</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="heat_pump" aria-pressed="false">
-                            <div class="text-3xl mb-2">🔥</div>
+                            <img src="assets/spliced_energy_icons_final/hvac.png" alt="Heat Pump" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Heat Pump</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="pool" aria-pressed="false">
-                            <div class="text-3xl mb-2">🏊</div>
+                            <img src="assets/spliced_energy_icons_final/pool.png" alt="Pool" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Pool</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="pool_pump" aria-pressed="false">
-                            <div class="text-3xl mb-2">⚡</div>
+                            <img src="assets/spliced_energy_icons_final/pool_pump.png" alt="Pool Pump" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Pool Pump</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="thermostat" aria-pressed="false">
-                            <div class="text-3xl mb-2">🌡️</div>
+                            <img src="assets/spliced_energy_icons_final/smart_thermostat.png" alt="Smart Thermostat" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Smart Thermostat</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="washer" aria-pressed="false">
-                            <div class="text-3xl mb-2">👕</div>
+                            <img src="assets/spliced_energy_icons_final/washer.png" alt="Washer" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Washer</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="dryer" aria-pressed="false">
-                            <div class="text-3xl mb-2">🌪️</div>
+                            <img src="assets/spliced_energy_icons_final/dryer.png" alt="Dryer" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Dryer</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="fridge" aria-pressed="false">
-                            <div class="text-3xl mb-2">🧊</div>
+                            <img src="assets/spliced_energy_icons_final/freezer.png" alt="Fridge" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Fridge</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="freezer" aria-pressed="false">
-                            <div class="text-3xl mb-2">🥶</div>
+                            <img src="assets/spliced_energy_icons_final/freezer.png" alt="Freezer" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Freezer</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="led_lights" aria-pressed="false">
-                            <div class="text-3xl mb-2">💡</div>
+                            <img src="assets/spliced_energy_icons_final/led_lights.png" alt="LED Lights" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">LED Lights</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="doors" aria-pressed="false">
-                            <div class="text-3xl mb-2">🚪</div>
+                            <img src="assets/spliced_energy_icons_final/doors.png" alt="Doors" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Doors</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandBlue transition-all" data-upgrade="other" aria-pressed="false">
-                            <div class="text-3xl mb-2">❓</div>
+                            <img src="assets/spliced_energy_icons_final/other.png" alt="Other" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Other</div>
                         </button>
                     </div>
@@ -364,34 +322,52 @@
             </div>
         </div>
 
-        <!-- Screen 5: Scheduling -->
+        <!-- Screen 5: Savings Calculator -->
         <div id="screen5" class="screen hidden">
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Estimate Your Savings</h2>
+                <p class="text-lg text-gray-600 mb-8 text-center">Enter your current electric bill and annual rate increase.</p>
+                <form id="savingsForm" class="space-y-4 mb-8">
+                    <div>
+                        <label for="monthlyBill" class="block text-sm font-medium text-gray-700 mb-2">Average Monthly Electric Bill ($)</label>
+                        <input type="number" id="monthlyBill" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandBlue focus:border-transparent">
+                    </div>
+                    <div>
+                        <label for="rateIncrease" class="block text-sm font-medium text-gray-700 mb-2">Expected Annual Utility Rate Increase (%)</label>
+                        <input type="number" id="rateIncrease" value="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandBlue focus:border-transparent">
+                    </div>
+                    <div class="flex justify-between pt-4">
+                        <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors back-btn">Back</button>
+                        <div class="space-x-2">
+                            <button type="button" id="skipCalc" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors">Skip</button>
+                            <button type="submit" class="bg-gradient-to-r from-brandGreen to-brandBlue hover:from-brandGreen/90 hover:to-brandBlue/90 text-white font-bold py-3 px-6 rounded-lg transition-all">Calculate</button>
+                        </div>
+                    </div>
+                </form>
+                <div id="savingsResult" class="hidden">
+                    <canvas id="savingsChart" height="200"></canvas>
+                    <p id="savingsNote" class="text-center mt-4 text-lg font-semibold text-brandGreen"></p>
+                    <div class="flex justify-between pt-6">
+                        <button type="button" id="recalc" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors">Back</button>
+                        <button type="button" id="calcContinue" class="bg-gradient-to-r from-brandGreen to-brandBlue hover:from-brandGreen/90 hover:to-brandBlue/90 text-white font-bold py-3 px-6 rounded-lg transition-all">Continue</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 6: Scheduling -->
+        <div id="screen6" class="screen hidden">
             <div class="bg-white rounded-2xl shadow-xl p-8">
                 <!-- Calendar Visual -->
                 <div class="mb-6 text-center">
-                    <svg viewBox="0 0 200 150" class="w-32 mx-auto mb-4" aria-hidden="true">
-                        <rect x="20" y="30" width="160" height="120" fill="white" stroke="#D1D5DB" stroke-width="2" rx="8"/>
-                        <rect x="20" y="30" width="160" height="30" fill="#1e88e5" rx="8 8 0 0"/>
-                        <text x="100" y="50" text-anchor="middle" fill="white" font-size="14" font-weight="bold">December</text>
-                        <g fill="#6B7280" font-size="10">
-                            <text x="40" y="80" text-anchor="middle">S</text>
-                            <text x="60" y="80" text-anchor="middle">M</text>
-                            <text x="80" y="80" text-anchor="middle">T</text>
-                            <text x="100" y="80" text-anchor="middle">W</text>
-                            <text x="120" y="80" text-anchor="middle">T</text>
-                            <text x="140" y="80" text-anchor="middle">F</text>
-                            <text x="160" y="80" text-anchor="middle">S</text>
-                        </g>
-                        <circle cx="80" cy="100" r="8" fill="#2c5530"/>
-                        <text x="80" y="105" text-anchor="middle" fill="white" font-size="8">15</text>
-                    </svg>
+                    <img src="assets/calendar-icon.png" alt="Calendar icon" class="w-32 mx-auto mb-4" />
                 </div>
 
                 <div class="text-center mb-8">
                     <h2 class="text-3xl font-bold text-brandGreen mb-4">Great news — you qualify!</h2>
                     <p class="text-lg text-gray-600">Let's find a time for your free engineering assessment.</p>
                 </div>
-                
+
                 <form id="schedulingForm">
                     <div class="grid md:grid-cols-2 gap-6 mb-8">
                         <div>
@@ -412,83 +388,12 @@
                             </select>
                         </div>
                     </div>
-                    
+
                     <div class="flex justify-between pt-6">
                         <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors back-btn">Back</button>
                         <button type="submit" class="bg-gradient-to-r from-brandGreen to-brandBlue hover:from-brandGreen/90 hover:to-brandBlue/90 text-white font-bold py-3 px-6 rounded-lg transition-all">Schedule Assessment</button>
                     </div>
                 </form>
-            </div>
-        </div>
-
-        <!-- Screen 6: Data Visualization -->
-        <div id="screen6" class="screen hidden">
-            <div class="bg-white rounded-2xl shadow-xl p-8">
-                <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Your Solar Investment</h2>
-                
-                <!-- Savings Graph -->
-                <div class="mb-12">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Projected Savings vs. Staying with Duke Energy</h3>
-                    <div class="bg-gray-50 p-6 rounded-lg">
-                        <svg viewBox="0 0 400 200" class="w-full" aria-hidden="true">
-                            <defs>
-                                <pattern id="grid" width="40" height="20" patternUnits="userSpaceOnUse">
-                                    <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#E5E7EB" stroke-width="1"/>
-                                </pattern>
-                            </defs>
-                            <rect width="400" height="200" fill="url(#grid)"/>
-                            <line x1="40" y1="160" x2="360" y2="160" stroke="#374151" stroke-width="2"/>
-                            <line x1="40" y1="160" x2="40" y2="40" stroke="#374151" stroke-width="2"/>
-                            <polyline points="40,140 120,135 200,130 280,125 360,120" fill="none" stroke="#EF4444" stroke-width="3" class="savings-line"/>
-                            <polyline points="40,140 120,120 200,100 280,80 360,60" fill="none" stroke="#2c5530" stroke-width="3" class="savings-line"/>
-                            <text x="200" y="190" text-anchor="middle" fill="#374151" font-size="12">Years</text>
-                            <text x="20" y="100" text-anchor="middle" fill="#374151" font-size="12" transform="rotate(-90 20 100)">Cost</text>
-                            <g transform="translate(250, 50)">
-                                <line x1="0" y1="0" x2="20" y2="0" stroke="#EF4444" stroke-width="3"/>
-                                <text x="25" y="5" fill="#374151" font-size="12">Duke Energy</text>
-                                <line x1="0" y1="20" x2="20" y2="20" stroke="#2c5530" stroke-width="3"/>
-                                <text x="25" y="25" fill="#374151" font-size="12">Solar</text>
-                            </g>
-                        </svg>
-                    </div>
-                </div>
-
-                <!-- Equity Graph -->
-                <div class="mb-8">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Equity Built Over Time</h3>
-                    <div class="bg-gray-50 p-6 rounded-lg">
-                        <div class="flex items-end justify-between h-32 space-x-2">
-                            <div class="flex flex-col items-center">
-                                <div class="chart-bar bg-brandBlue w-8 rounded-t" style="height: 20%"></div>
-                                <span class="text-xs mt-2">Year 5</span>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <div class="chart-bar bg-brandBlue w-8 rounded-t" style="height: 40%"></div>
-                                <span class="text-xs mt-2">Year 10</span>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <div class="chart-bar bg-brandBlue w-8 rounded-t" style="height: 70%"></div>
-                                <span class="text-xs mt-2">Year 15</span>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <div class="chart-bar bg-brandBlue w-8 rounded-t" style="height: 100%"></div>
-                                <span class="text-xs mt-2">Year 20</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Badge -->
-                <div class="text-center mb-8">
-                    <div class="inline-block bg-gradient-to-r from-brandGreen to-brandBlue text-white px-6 py-3 rounded-full font-bold text-lg">
-                        🏠 Your Roof, Your Choice
-                    </div>
-                </div>
-                
-                <div class="flex justify-between pt-6">
-                    <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors back-btn">Back</button>
-                    <button type="button" id="vizContinue" class="bg-gradient-to-r from-brandGreen to-brandBlue hover:from-brandGreen/90 hover:to-brandBlue/90 text-white font-bold py-3 px-6 rounded-lg transition-all">Continue</button>
-                </div>
             </div>
         </div>
 
@@ -546,6 +451,7 @@
         </div>
     </div>
 
-    <script src="js/qualify-funnel.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/qualifier.js"></script>
 </body>
 </html>
