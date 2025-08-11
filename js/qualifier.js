@@ -2,6 +2,15 @@ let currentScreen = 1;
 let selectedUpgrades = [];
 let currentTestimonial = 0;
 let progressSun;
+let savingsChartInstance = null;
+
+const CONFIG = {
+  termYears: 25,
+  baseFixedFeeUsd: 25,
+  fixedEscalationPct: 0.02,
+  offsetPct: 0.90,
+  rateHikeSchedule: null
+};
 
 function showScreen(index) {
   document.querySelector(`#screen${currentScreen}`).classList.add('hidden');
