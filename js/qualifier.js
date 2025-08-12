@@ -177,6 +177,9 @@ function formatCurrency(v) {
 
     if (chart) chart.destroy();
 
+    // show result container before rendering so Chart.js can size correctly
+    resultWrap.classList.remove('hidden');
+
     chart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -238,14 +241,14 @@ function formatCurrency(v) {
         }
       }
     });
-
-    resultWrap.classList.remove('hidden');
   }
 
   form.addEventListener('submit', e => {
     e.preventDefault();
-    const bill = Number(inputBill.value);
+    let bill = Number(inputBill.value);
     if (!bill || bill < 10) return;
+    // treat large values as yearly totals and convert to monthly average
+    if (bill > 1000) bill = bill / 12;
     const series = buildSeries(bill);
     renderChart(series);
   });
