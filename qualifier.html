@@ -36,8 +36,8 @@
             from { transform: translateX(-10px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-        .tooltip { visibility: hidden; opacity: 0; transition: opacity 0.3s, visibility 0.3s; }
-        .tooltip.show { visibility: visible; opacity: 1; }
+        .tooltip { display: none; }
+        .tooltip.show { display: block; }
         .upgrade-icon { transition: all 0.3s ease; }
         .upgrade-icon.selected { background-color: #2c5530; color: white; transform: scale(1.05); }
     </style>
@@ -98,7 +98,7 @@
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
                             <label for="cellPhone" class="block text-sm font-medium text-gray-700 mb-2">Cell Phone</label>
-                            <input type="tel" id="cellPhone" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandOrange focus:border-transparent">
+                            <input type="tel" id="cellPhone" required pattern="[0-9]{10}" inputmode="numeric" title="Enter 10-digit phone number" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandOrange focus:border-transparent">
                             <p class="text-xs text-gray-500 mt-1">We won't contact you unless you qualify</p>
                         </div>
                         <div>
@@ -528,6 +528,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/qualifier.js"></script>
-</body>
+    <script src="js/qualifier.js?v=2"></script>
+  </body>
 </html>

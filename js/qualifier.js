@@ -7,7 +7,7 @@ const appState = {
   utility: 'DEC'
 };
 
-const STORAGE_KEYS = { usage: 'amp_usage_kwh' };
+const STORAGE_KEYS = { usage: 'amp_usage_kwh_v2' };
 
 function setUsageKWh(kwh) {
   appState.annualUsageKWh = kwh;
@@ -31,6 +31,27 @@ const CONFIG = {
   NET_METERING_DEADLINE: new Date(new Date().getFullYear() + 1, 6, 1) // July=6 (0-indexed)
 };
 
+function recalcMonthlyFromUsage() {
+  const carried = Number(document.getElementById('annualUsageKWh')?.value);
+  if (!Number.isFinite(carried) || carried <= 0) return;
+
+  const inputBill = document.getElementById('monthlyBill');
+  const estRate = 0.14;
+  const monthlyFromUsage = Math.round((carried * estRate) / 12 + CONFIG.baseFixedFeeUsd);
+
+  setUsageKWh(carried);
+  inputBill.value = monthlyFromUsage;
+  inputBill.readOnly = true;
+  inputBill.setAttribute('aria-readonly', 'true');
+  inputBill.classList.add('bg-gray-50');
+
+  inputBill.parentElement.querySelectorAll('.seed-note').forEach(n => n.remove());
+  const helper = document.createElement('p');
+  helper.className = 'seed-note text-xs text-gray-500 mt-1';
+  helper.textContent = `Calculated from your 12-month usage: ~$${monthlyFromUsage}/mo (at $${estRate.toFixed(2)}/kWh + $${CONFIG.baseFixedFeeUsd} fixed).`;
+  inputBill.parentElement.appendChild(helper);
+}
+
 function showScreen(index) {
   document.querySelector(`#screen${currentScreen}`).classList.add('hidden');
   currentScreen = index;
@@ -38,6 +59,7 @@ function showScreen(index) {
   screen.classList.remove('hidden');
   screen.classList.add('fade-in');
   updateProgressBar();
+  if (index === 5) recalcMonthlyFromUsage();
 }
 
 function nextScreen() {
@@ -232,25 +254,9 @@ function formatCurrency(v) {
 
 (function initSavings() {
   const form = document.getElementById('savingsForm');
-  const inputBill = document.getElementById('monthlyBill');
   const installMonthInput = document.getElementById('installMonth');
 
-  (function seedMonthlyFromUsage() {
-    const carried = appState.annualUsageKWh ?? getUsageKWh();
-    if (!carried) return; // Step 3 now required, but guard anyway
-    const estRate = 0.14;
-    const monthlyFromUsage = Math.round((carried * estRate) / 12 + CONFIG.baseFixedFeeUsd);
-
-    inputBill.value = monthlyFromUsage;
-    inputBill.readOnly = true;
-    inputBill.setAttribute('aria-readonly', 'true');
-    inputBill.classList.add('bg-gray-50');
-
-    const helper = document.createElement('p');
-    helper.className = 'text-xs text-gray-500 mt-1';
-    helper.textContent = `Calculated from your 12-month usage: ~$${monthlyFromUsage}/mo (at $${estRate.toFixed(2)}/kWh + $${CONFIG.baseFixedFeeUsd} fixed).`;
-    inputBill.parentElement.appendChild(helper);
-  })();
+  recalcMonthlyFromUsage();
 
   const resultWrap = document.getElementById('savingsResult');
   const note = document.getElementById('savingsNote');
@@ -469,6 +475,15 @@ function restartQualifier() {
   document.getElementById('savingsResult').classList.add('hidden');
   document.getElementById('savingsForm').classList.remove('hidden');
   document.getElementById('savingsNote').classList.add('hidden');
+  setUsageKWh(null);
+  const bill = document.getElementById('monthlyBill');
+  if (bill) {
+    bill.readOnly = false;
+    bill.removeAttribute('aria-readonly');
+    bill.classList.remove('bg-gray-50');
+    bill.value = '';
+    bill.parentElement.querySelectorAll('.seed-note').forEach(n => n.remove());
+  }
 }
 
 // Event bindings
