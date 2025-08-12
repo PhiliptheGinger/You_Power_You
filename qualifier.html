@@ -129,6 +129,7 @@
                         <div id="check3" class="w-4 h-4 rounded-full bg-gray-300 transition-colors"></div>
                         <div id="check4" class="w-4 h-4 rounded-full bg-gray-300 transition-colors"></div>
                         <div id="check5" class="w-4 h-4 rounded-full bg-gray-300 transition-colors"></div>
+                        <div id="check6" class="w-4 h-4 rounded-full bg-gray-300 transition-colors"></div>
                     </div>
                 </div>
 
@@ -232,6 +233,21 @@
                         </div>
                     </fieldset>
 
+                    <!-- Question 6 (NEW): Yearly Usage -->
+                    <fieldset class="qualification-question" id="usage-fieldset">
+                        <legend id="usage-label" class="flex items-center mb-3 text-lg font-medium text-gray-700">
+                            What’s your yearly electricity usage from your last utility statement? (kWh/year)
+                            <button type="button" class="ml-2 w-5 h-5 bg-brandOrange text-white rounded-full text-xs flex items-center justify-center tooltip-btn" data-target="usage-tooltip" aria-label="Where to find yearly usage">?</button>
+                        </legend>
+                        <div id="usage-tooltip" class="tooltip bg-gray-800 text-white p-3 rounded-lg mb-3 text-sm" role="tooltip">
+                            Check your utility’s annual summary or last 12 bills. It’s OK to leave blank if you don’t know yet.
+                        </div>
+                        <div class="max-w-sm">
+                            <input type="number" id="annualUsageKWh" min="100" step="1" placeholder="e.g., 12000" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandOrange focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">Optional, but improves the accuracy of your savings estimate.</p>
+                        </div>
+                    </fieldset>
+
                     <div class="flex justify-between pt-6">
                         <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors back-btn">Back</button>
                         <button type="submit" class="bg-gradient-to-r from-brandGreen to-brandOrange hover:from-brandGreen/90 hover:to-brandOrange/90 text-white font-bold py-3 px-6 rounded-lg transition-all">Continue</button>
@@ -249,63 +265,63 @@
                 <form id="upgradesForm">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="insulation" aria-pressed="false">
-                            <img src="assets/spliced_energy_icons_final/insulation.png" alt="Insulation" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/insulation.png" alt="Insulation" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Insulation</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="windows" aria-pressed="false">
-                            <img src="assets/spliced_energy_icons_final/windows.png" alt="Windows" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/windows.png" alt="Windows" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Windows</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="water_heater" aria-pressed="false">
-                            <img src="assets/spliced_energy_icons_final/question.png" alt="Water Heater" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/question.png" alt="Water Heater" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Water Heater</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="hvac" aria-pressed="false">
-                            <img src="assets/spliced_energy_icons_final/hvac.png" alt="HVAC" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/hvac.png" alt="HVAC" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">HVAC</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="heat_pump" aria-pressed="false">
-                            <img src="assets/spliced_energy_icons_final/hvac.png" alt="Heat Pump" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/hvac.png" alt="Heat Pump" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Heat Pump</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="pool" aria-pressed="false">
-                            <img src="assets/spliced_energy_icons_final/pool.png" alt="Pool" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/pool.png" alt="Pool" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Pool</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="pool_pump" aria-pressed="false">
-                            <img src="assets/spliced_energy_icons_final/pool_pump.png" alt="Pool Pump" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/pool_pump.png" alt="Pool Pump" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Pool Pump</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="thermostat" aria-pressed="false">
-                            <img src="assets/spliced_energy_icons_final/smart_thermostat.png" alt="Smart Thermostat" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/smart_thermostat.png" alt="Smart Thermostat" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Smart Thermostat</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="washer" aria-pressed="false">
-                            <img src="assets/spliced_energy_icons_final/washer.png" alt="Washer" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/washer.png" alt="Washer" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Washer</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="dryer" aria-pressed="false">
-                            <img src="assets/spliced_energy_icons_final/dryer.png" alt="Dryer" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/dryer.png" alt="Dryer" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Dryer</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="fridge" aria-pressed="false">
-                            <img src="assets/spliced_energy_icons_final/freezer.png" alt="Fridge" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/freezer.png" alt="Fridge" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Fridge</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="freezer" aria-pressed="false">
-                            <img src="assets/spliced_energy_icons_final/freezer.png" alt="Freezer" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/freezer.png" alt="Freezer" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Freezer</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="led_lights" aria-pressed="false">
-                            <img src="assets/spliced_energy_icons_final/led_lights.png" alt="LED Lights" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/led_lights.png" alt="LED Lights" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">LED Lights</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="doors" aria-pressed="false">
-                            <img src="assets/spliced_energy_icons_final/doors.png" alt="Doors" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/doors.png" alt="Doors" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Doors</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="other" aria-pressed="false">
-                            <img src="assets/spliced_energy_icons_final/other.png" alt="Other" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/other.png" alt="Other" class="w-8 h-8 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Other</div>
                         </button>
                     </div>
@@ -325,35 +341,57 @@
 
         <!-- Screen 5: Savings Calculator -->
         <div id="screen5" class="screen hidden">
-            <div class="bg-white rounded-2xl shadow-xl p-8">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Estimate Your Savings</h2>
-                <p class="text-lg text-gray-600 mb-8 text-center">Enter your current electric bill and annual rate increase.</p>
-                <form id="savingsForm" class="space-y-4 mb-8">
-                    <div>
-                        <label for="monthlyBill" class="block text-sm font-medium text-gray-700 mb-2">Average Monthly Electric Bill ($)</label>
-                        <input type="number" id="monthlyBill" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandOrange focus:border-transparent">
-                    </div>
-                    <div>
-                        <label for="rateIncrease" class="block text-sm font-medium text-gray-700 mb-2">Expected Annual Utility Rate Increase (%)</label>
-                        <input type="number" id="rateIncrease" value="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandOrange focus:border-transparent">
-                    </div>
-                    <div class="flex justify-between pt-4">
-                        <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors back-btn">Back</button>
-                        <div class="space-x-2">
-                            <button type="button" id="skipCalc" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors">Skip</button>
-                            <button type="submit" class="bg-gradient-to-r from-brandGreen to-brandOrange hover:from-brandGreen/90 hover:to-brandOrange/90 text-white font-bold py-3 px-6 rounded-lg transition-all">Calculate</button>
-                        </div>
-                    </div>
-                </form>
-                <div id="savingsResult" class="hidden">
-                    <canvas id="savingsChart" height="200"></canvas>
-                    <p id="savingsNote" class="text-center mt-4 text-lg font-semibold text-brandGreen"></p>
-                    <div class="flex justify-between pt-6">
-                        <button type="button" id="recalc" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors">Back</button>
-                        <button type="button" id="calcContinue" class="bg-gradient-to-r from-brandGreen to-brandOrange hover:from-brandGreen/90 hover:to-brandOrange/90 text-white font-bold py-3 px-6 rounded-lg transition-all">Continue</button>
-                    </div>
+          <div class="bg-white rounded-2xl shadow-xl p-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Estimate Your Savings</h2>
+            <p class="text-lg text-gray-600 mb-8 text-center">
+              Enter your current average bill and the expected utility rate hike. If you know your yearly usage (Step 3), we’ll apply a more accurate markdown.
+            </p>
+
+            <form id="savingsForm" class="space-y-4 mb-8">
+              <div>
+                <label for="monthlyBill" class="block text-sm font-medium text-gray-700 mb-2">
+                  Average Monthly Electric Bill ($)
+                </label>
+                <input type="number" id="monthlyBill" min="10" step="1"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandOrange focus:border-transparent">
+              </div>
+              <div>
+                <label for="rateIncrease" class="block text-sm font-medium text-gray-700 mb-2">
+                  Expected Annual Utility Rate Increase (%)
+                </label>
+                <input type="number" id="rateIncrease" min="0" step="0.1" value="3"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandOrange focus:border-transparent">
+              </div>
+
+              <div class="flex justify-between pt-4">
+                <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors back-btn">
+                  Back
+                </button>
+                <div class="space-x-2">
+                  <button type="button" id="skipCalc" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors">
+                    Skip
+                  </button>
+                  <button type="submit" class="bg-gradient-to-r from-brandGreen to-brandOrange hover:from-brandGreen/90 hover:to-brandOrange/90 text-white font-bold py-3 px-6 rounded-lg transition-all">
+                    Calculate
+                  </button>
                 </div>
+              </div>
+            </form>
+
+            <div id="savingsResult" class="hidden">
+              <canvas id="savingsChart" height="220"></canvas>
+              <p id="savingsNote" class="text-center mt-4 text-lg font-semibold text-brandGreen"></p>
+              <p id="usageHint" class="text-center mt-1 text-sm text-gray-500 hidden">For a more accurate markdown, add your yearly usage on Step 3.</p>
+              <div class="flex justify-between pt-6">
+                <button type="button" id="recalc" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors">
+                  Back
+                </button>
+                <button type="button" id="calcContinue" class="bg-gradient-to-r from-brandGreen to-brandOrange hover:from-brandGreen/90 hover:to-brandOrange/90 text-white font-bold py-3 px-6 rounded-lg transition-all">
+                  Continue
+                </button>
+              </div>
             </div>
+          </div>
         </div>
 
         <!-- Screen 6: Scheduling -->
