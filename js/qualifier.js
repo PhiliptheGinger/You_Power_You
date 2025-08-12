@@ -27,7 +27,6 @@ function getUsageKWh() {
 const CONFIG = {
   termYears: 25,
   baseFixedFeeUsd: 25,
-  fixedEscalationPct: 0.02, // used only if the solar escalator toggle is ON
   offsetPct: 0.90,          // solar payment is ~90% of current bill by default
   NET_METERING_DEADLINE: new Date(new Date().getFullYear() + 1, 6, 1) // July=6 (0-indexed)
 };
@@ -123,14 +122,13 @@ function inferMonthlyBill({ monthlyInput, carriedAnnualKWh }) {
   return (bill && bill >= 10) ? bill : null;
 }
 
-// ===== Long-term (annual) series with optional solar flat/escalator =====
-function buildSeriesWithSolar_dateBased(startMonthly, solarStartsAtMonthIndex, useSolarEscalator, utility = 'DEC') {
+// ===== Long-term (annual) series with flat solar comparison =====
+function buildSeriesWithSolar_dateBased(startMonthly, solarStartsAtMonthIndex, utility = 'DEC') {
   const hikes = (DUKE_RATE_SCHEDULE[utility] || []).map(h => ({ ym: parseYM(h.effective), pct: h.pct }));
   hikes.sort((a, b) => a.ym - b.ym);
 
   const today = new Date();
   const start = new Date(today.getFullYear(), today.getMonth(), 1);
-  const end = new Date(start.getFullYear() + HORIZON_YEARS, start.getMonth(), 1);
 
   const months = [];
   let cur = new Date(start);
@@ -139,13 +137,13 @@ function buildSeriesWithSolar_dateBased(startMonthly, solarStartsAtMonthIndex, u
 
   const flatMonthly = startMonthly;
 
-  while (cur <= end) {
+  for (let i = 0; i < HORIZON_YEARS * 12; i++) {
     const curYM = ym(cur);
-    for (let i = lastHikeIndexApplied + 1; i < hikes.length; i++) {
-      if (hikes[i].ym === curYM) {
-        monthly *= (1 + hikes[i].pct);
-        lastHikeIndexApplied = i;
-      } else if (hikes[i].ym > curYM) { break; }
+    for (let j = lastHikeIndexApplied + 1; j < hikes.length; j++) {
+      if (hikes[j].ym === curYM) {
+        monthly *= (1 + hikes[j].pct);
+        lastHikeIndexApplied = j;
+      } else if (hikes[j].ym > curYM) { break; }
     }
     if (lastHikeIndexApplied === hikes.length - 1 && hikes.length > 0) {
       monthly = monthly * Math.pow(1 + POST_TREND, 1/12);
@@ -162,13 +160,12 @@ function buildSeriesWithSolar_dateBased(startMonthly, solarStartsAtMonthIndex, u
 
   const years = []; const trend = []; const flat = []; const solar = [];
   const baseMonthlySolar = startMonthly * CONFIG.offsetPct + CONFIG.baseFixedFeeUsd;
-  const solarStartYear = Math.floor(solarStartsAtMonthIndex / 12);
+  const solarStartYear = Math.floor(solarStartsAtMonthIndex / 12) + 1;
 
-  for (let y = 0; y <= HORIZON_YEARS; y++) {
+  for (let y = 1; y <= HORIZON_YEARS; y++) {
     years.push(y);
-    const startIdx = y * 12;
-    const endIdx = Math.min(startIdx + 12, months.length);
-    const slice = months.slice(startIdx, endIdx);
+    const startIdx = (y - 1) * 12;
+    const slice = months.slice(startIdx, startIdx + 12);
 
     const yearTrend = slice.reduce((s, m) => s + m.utilityTrendMonthly, 0);
     const yearFlat = slice.reduce((s, m) => s + m.utilityFlatMonthly, 0);
@@ -179,11 +176,7 @@ function buildSeriesWithSolar_dateBased(startMonthly, solarStartsAtMonthIndex, u
     if (y < solarStartYear) {
       solar.push(null);
     } else {
-      const yearsSince = y - solarStartYear;
-      const monthlySolar = useSolarEscalator
-        ? baseMonthlySolar * Math.pow(1 + CONFIG.fixedEscalationPct, Math.max(0, yearsSince))
-        : baseMonthlySolar;
-      solar.push(monthlySolar * 12);
+      solar.push(baseMonthlySolar * 12);
     }
   }
 
@@ -241,17 +234,21 @@ function formatCurrency(v) {
   const form = document.getElementById('savingsForm');
   const inputBill = document.getElementById('monthlyBill');
   const installMonthInput = document.getElementById('installMonth');
-  const useEscalatorInput = document.getElementById('solarEscalator');
 
   (function seedMonthlyFromUsage() {
     const carried = appState.annualUsageKWh ?? getUsageKWh();
-    if (!carried) return;
+    if (!carried) return; // Step 3 now required, but guard anyway
     const estRate = 0.14;
-    const estimatedMonthly = Math.round((carried * estRate) / 12 + CONFIG.baseFixedFeeUsd);
-    if (!inputBill.value) inputBill.value = estimatedMonthly;
+    const monthlyFromUsage = Math.round((carried * estRate) / 12 + CONFIG.baseFixedFeeUsd);
+
+    inputBill.value = monthlyFromUsage;
+    inputBill.readOnly = true;
+    inputBill.setAttribute('aria-readonly', 'true');
+    inputBill.classList.add('bg-gray-50');
+
     const helper = document.createElement('p');
     helper.className = 'text-xs text-gray-500 mt-1';
-    helper.textContent = `Estimated from your 12-month usage: about $${estimatedMonthly}/mo (at $${estRate.toFixed(2)}/kWh + $${CONFIG.baseFixedFeeUsd} fixed).`;
+    helper.textContent = `Calculated from your 12-month usage: ~$${monthlyFromUsage}/mo (at $${estRate.toFixed(2)}/kWh + $${CONFIG.baseFixedFeeUsd} fixed).`;
     inputBill.parentElement.appendChild(helper);
   })();
 
@@ -334,11 +331,6 @@ function formatCurrency(v) {
 
     const { years, trend, flat, solar } = series;
 
-    const totalTrend = trend.reduce((a, b) => a + b, 0);
-    const totalFlat = flat.reduce((a, b) => a + b, 0);
-    const delta = totalTrend - totalFlat;
-    note.textContent = `20‑year exposure difference (trend vs. flat utility): ${formatCurrency(delta)}.`;
-
     longChart = new Chart(longCtx, {
       type: 'line',
       data: {
@@ -352,18 +344,18 @@ function formatCurrency(v) {
             backgroundColor: 'rgba(44,85,48,0.18)',
             tension: 0.25,
             borderWidth: 2,
-            pointRadius: ctx => ([5,10,15,20].includes(ctx.dataIndex) ? 4 : 0),
+            pointRadius: ctx => ([4,9,14,19].includes(ctx.dataIndex) ? 4 : 0),
             pointBackgroundColor: '#2c5530'
           },
           {
-            label: 'Utility (never raises rates again)',
+            label: 'Utility (flat rates)',
             data: flat,
             fill: true,
             borderColor: '#ff914d',
             backgroundColor: 'rgba(255,145,77,0.15)',
             tension: 0.25,
             borderWidth: 2,
-            pointRadius: ctx => ([5,10,15,20].includes(ctx.dataIndex) ? 3 : 0),
+            pointRadius: ctx => ([4,9,14,19].includes(ctx.dataIndex) ? 3 : 0),
             pointBackgroundColor: '#ff914d'
           },
           {
@@ -401,12 +393,10 @@ function formatCurrency(v) {
   }
 
   function handleSubmit() {
-    const monthlyInput = Number(inputBill.value);
-    const monthly = inferMonthlyBill({
-      monthlyInput,
-      carriedAnnualKWh: appState.annualUsageKWh ?? getUsageKWh()
-    });
-    if (!monthly) return;
+    const carried = appState.annualUsageKWh ?? getUsageKWh();
+    if (!carried) { showScreen(3); return; }
+    const estRate = 0.14;
+    const monthly = (carried * estRate) / 12 + CONFIG.baseFixedFeeUsd;
 
     const today = new Date();
     let solarStartIndex = 0;
@@ -417,15 +407,13 @@ function formatCurrency(v) {
       solarStartIndex = Math.max(0, diffMonths);
     }
 
-    const useEscalator = !!useEscalatorInput.checked;
-
     resultWrap.classList.remove('hidden');
     form.classList.add('hidden');
 
     const nearSeries = buildNearTermMonthlySeries(monthly, appState.utility, today);
     renderNearTermChart(nearSeries);
 
-    const longSeries = buildSeriesWithSolar_dateBased(monthly, solarStartIndex, useEscalator, appState.utility);
+    const longSeries = buildSeriesWithSolar_dateBased(monthly, solarStartIndex, appState.utility);
     renderLongTermChart(longSeries);
 
     const assumedMonthlySolar = Math.round(monthly * CONFIG.offsetPct + CONFIG.baseFixedFeeUsd);
@@ -438,17 +426,14 @@ function formatCurrency(v) {
 
   form.addEventListener('submit', (e) => { e.preventDefault(); handleSubmit(); });
 
-  skipBtn.addEventListener('click', () => {
-    inputBill.value = inputBill.value || 150;
-    handleSubmit();
-  });
+  skipBtn.addEventListener('click', () => showScreen(7));
 
   recalcBtn.addEventListener('click', () => {
     resultWrap.classList.add('hidden');
     form.classList.remove('hidden');
   });
 
-  continueBtn.addEventListener('click', () => nextScreen());
+  continueBtn.addEventListener('click', () => showScreen(6));
 
 })();
 
@@ -505,13 +490,17 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.back-btn').forEach(btn => btn.addEventListener('click', prevScreen));
   document.getElementById('restartBtn').addEventListener('click', restartQualifier);
 
-  document.getElementById('homeownerForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
+  document.getElementById('homeownerForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const f = e.currentTarget;
+    if (f.reportValidity()) nextScreen();
+  });
   document.getElementById('qualificationForm').addEventListener('submit', e => {
     e.preventDefault();
-    if (usage3) {
-      const v = Number(usage3.value);
-      setUsageKWh(Number.isFinite(v) && v > 0 ? v : null);
-    }
+    const f = e.currentTarget;
+    if (!f.reportValidity()) return;
+    const v = Number(document.getElementById('annualUsageKWh').value);
+    setUsageKWh(Number.isFinite(v) && v > 0 ? v : null);
     nextScreen();
   });
   document.getElementById('upgradesForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
