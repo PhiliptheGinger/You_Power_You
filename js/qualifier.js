@@ -426,17 +426,14 @@ function formatCurrency(v) {
 
   form.addEventListener('submit', (e) => { e.preventDefault(); handleSubmit(); });
 
-  skipBtn.addEventListener('click', () => {
-    inputBill.value = inputBill.value || 150;
-    handleSubmit();
-  });
+  skipBtn.addEventListener('click', () => showScreen(7));
 
   recalcBtn.addEventListener('click', () => {
     resultWrap.classList.add('hidden');
     form.classList.remove('hidden');
   });
 
-  continueBtn.addEventListener('click', () => nextScreen());
+  continueBtn.addEventListener('click', () => showScreen(6));
 
 })();
 
