@@ -5,7 +5,7 @@ let currentTestimonial = 0;
 const appState = {
   annualUsageKWh: null,
   utility: 'DEC'
-};
+}
 
 const CONFIG = {
   termYears: 25,
