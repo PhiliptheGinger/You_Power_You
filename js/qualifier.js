@@ -1,15 +1,35 @@
 let currentScreen = 1;
 let selectedUpgrades = [];
 let currentTestimonial = 0;
-let progressSun;
-let savingsChartInstance = null;
+
+const appState = {
+  annualUsageKWh: null,
+  utility: 'DEC'
+};
+
+const STORAGE_KEYS = { usage: 'amp_usage_kwh' };
+
+function setUsageKWh(kwh) {
+  appState.annualUsageKWh = kwh;
+  try {
+    if (kwh) localStorage.setItem(STORAGE_KEYS.usage, String(kwh));
+    else localStorage.removeItem(STORAGE_KEYS.usage);
+  } catch {}
+}
+
+function getUsageKWh() {
+  try {
+    const v = Number(localStorage.getItem(STORAGE_KEYS.usage));
+    return Number.isFinite(v) && v > 0 ? v : null;
+  } catch { return null; }
+}
 
 const CONFIG = {
   termYears: 25,
   baseFixedFeeUsd: 25,
-  fixedEscalationPct: 0.02,
-  offsetPct: 0.90,
-  rateHikeSchedule: null
+  fixedEscalationPct: 0.02, // used only if the solar escalator toggle is ON
+  offsetPct: 0.90,          // solar payment is ~90% of current bill by default
+  NET_METERING_DEADLINE: new Date(new Date().getFullYear() + 1, 6, 1) // July=6 (0-indexed)
 };
 
 function showScreen(index) {
@@ -37,13 +57,6 @@ function updateProgressBar() {
   const bar = document.getElementById('progressBar');
   bar.style.width = progress + '%';
   document.getElementById('currentStep').textContent = currentScreen;
-
-  if (progressSun) {
-    const container = bar.parentElement;
-    const maxLeft = container.offsetWidth - progressSun.offsetWidth;
-    const ratio = (currentScreen - 1) / (totalScreens - 1);
-    progressSun.style.left = maxLeft * ratio + 'px';
-  }
 }
 
 function showTooltip(id) {
@@ -80,36 +93,144 @@ function toggleUpgrade(element, upgrade) {
     pressed ? otherInput.classList.remove('hidden') : otherInput.classList.add('hidden');
   }
 }
-// ---- Savings Calculator (NC rate path, no user-entered % needed) ----
-const NC_RATE_STEPS = [
-  { year: 1, pct: 0.083 },
-  { year: 2, pct: 0.033 },
-  { year: 3, pct: 0.031 }
-];
-const POST_TREND = 0.03;
+// ---- Savings Calculator with solar comparison and near‑term projection ----
+// Duke Energy Carolinas (example schedule — add/adjust as needed)
+const DUKE_RATE_SCHEDULE = {
+  DEC: [
+    { effective: '2025-01', pct: 0.083 },
+    { effective: '2026-01', pct: 0.033 },
+    { effective: '2027-01', pct: 0.031 },
+  ],
+  DEP: []
+};
+
+const POST_TREND = 0.03; // 3%/yr beyond last known hike
 const HORIZON_YEARS = 20;
 
-function buildSeries(startMonthly) {
-  const years = [];
-  const trend = [];
-  const flat = [];
+function ym(date) { return date.getFullYear() * 100 + date.getMonth(); }
+function parseYM(s) { const [Y, M] = s.split('-').map(Number); return (Y * 100) + (M - 1); }
+
+// ===== Monthly bill inference =====
+// Accepts monthly dollars, annual dollars (>1000), or carried yearly kWh.
+function inferMonthlyBill({ monthlyInput, carriedAnnualKWh }) {
+  let bill = Number(monthlyInput);
+  if (bill && bill > 1000) bill = bill / 12; // annual $ mistakenly entered
+
+  if ((!bill || bill < 10) && carriedAnnualKWh && carriedAnnualKWh > 100) {
+    const estRate = 0.14; // default $/kWh guess
+    bill = (carriedAnnualKWh * estRate) / 12 + CONFIG.baseFixedFeeUsd;
+  }
+  return (bill && bill >= 10) ? bill : null;
+}
+
+// ===== Long-term (annual) series with optional solar flat/escalator =====
+function buildSeriesWithSolar_dateBased(startMonthly, solarStartsAtMonthIndex, useSolarEscalator, utility = 'DEC') {
+  const hikes = (DUKE_RATE_SCHEDULE[utility] || []).map(h => ({ ym: parseYM(h.effective), pct: h.pct }));
+  hikes.sort((a, b) => a.ym - b.ym);
+
+  const today = new Date();
+  const start = new Date(today.getFullYear(), today.getMonth(), 1);
+  const end = new Date(start.getFullYear() + HORIZON_YEARS, start.getMonth(), 1);
+
+  const months = [];
+  let cur = new Date(start);
   let monthly = startMonthly;
+  let lastHikeIndexApplied = -1;
+
+  const flatMonthly = startMonthly;
+
+  while (cur <= end) {
+    const curYM = ym(cur);
+    for (let i = lastHikeIndexApplied + 1; i < hikes.length; i++) {
+      if (hikes[i].ym === curYM) {
+        monthly *= (1 + hikes[i].pct);
+        lastHikeIndexApplied = i;
+      } else if (hikes[i].ym > curYM) { break; }
+    }
+    if (lastHikeIndexApplied === hikes.length - 1 && hikes.length > 0) {
+      monthly = monthly * Math.pow(1 + POST_TREND, 1/12);
+    }
+
+    months.push({
+      date: new Date(cur),
+      utilityTrendMonthly: monthly,
+      utilityFlatMonthly: flatMonthly
+    });
+
+    cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
+  }
+
+  const years = []; const trend = []; const flat = []; const solar = [];
+  const baseMonthlySolar = startMonthly * CONFIG.offsetPct + CONFIG.baseFixedFeeUsd;
+  const solarStartYear = Math.floor(solarStartsAtMonthIndex / 12);
 
   for (let y = 0; y <= HORIZON_YEARS; y++) {
     years.push(y);
-    flat.push(startMonthly * 12);
-    if (y > 0) {
-      const step = NC_RATE_STEPS.find(s => s.year === y);
-      if (step) {
-        monthly = monthly * (1 + step.pct);
-      } else if (y > 3) {
-        monthly = monthly * (1 + POST_TREND);
-      }
+    const startIdx = y * 12;
+    const endIdx = Math.min(startIdx + 12, months.length);
+    const slice = months.slice(startIdx, endIdx);
+
+    const yearTrend = slice.reduce((s, m) => s + m.utilityTrendMonthly, 0);
+    const yearFlat = slice.reduce((s, m) => s + m.utilityFlatMonthly, 0);
+
+    trend.push(yearTrend);
+    flat.push(yearFlat);
+
+    if (y < solarStartYear) {
+      solar.push(null);
+    } else {
+      const yearsSince = y - solarStartYear;
+      const monthlySolar = useSolarEscalator
+        ? baseMonthlySolar * Math.pow(1 + CONFIG.fixedEscalationPct, Math.max(0, yearsSince))
+        : baseMonthlySolar;
+      solar.push(monthlySolar * 12);
     }
-    trend.push(monthly * 12);
   }
 
-  return { years, trend, flat };
+  return { years, trend, flat, solar };
+}
+
+// ===== Near-term (month-by-month) projection up to deadline (or ~18 months) =====
+function buildNearTermMonthlySeries(startMonthly, utility = 'DEC', today = new Date()) {
+  const hikes = (DUKE_RATE_SCHEDULE[utility] || []).map(h => ({ ym: parseYM(h.effective), pct: h.pct }));
+  hikes.sort((a, b) => a.ym - b.ym);
+
+  const labels = [];
+  const months = [];
+  const util = [];
+
+  const start = new Date(today.getFullYear(), today.getMonth(), 1);
+  const deadline = CONFIG.NET_METERING_DEADLINE;
+  const end = new Date(Math.max(deadline, new Date(start.getFullYear(), start.getMonth() + 18, 1)));
+
+  let cur = new Date(start);
+  let monthly = startMonthly;
+  let lastHikeIndexApplied = -1;
+
+  while (cur <= end) {
+    const curYM = ym(cur);
+
+    for (let i = lastHikeIndexApplied + 1; i < hikes.length; i++) {
+      if (hikes[i].ym === curYM) {
+        monthly *= (1 + hikes[i].pct);
+        lastHikeIndexApplied = i;
+      } else if (hikes[i].ym > curYM) {
+        break;
+      }
+    }
+
+    if (lastHikeIndexApplied === hikes.length - 1 && hikes.length > 0) {
+      monthly = monthly * Math.pow(1 + POST_TREND, 1/12);
+    }
+
+    months.push(new Date(cur));
+    util.push(monthly);
+    labels.push(cur.toLocaleString(undefined, { month: 'short', year: '2-digit' }));
+
+    cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
+  }
+
+  return { months, labels, util, deadline };
 }
 
 function formatCurrency(v) {
@@ -119,96 +240,141 @@ function formatCurrency(v) {
 (function initSavings() {
   const form = document.getElementById('savingsForm');
   const inputBill = document.getElementById('monthlyBill');
+  const installMonthInput = document.getElementById('installMonth');
+  const useEscalatorInput = document.getElementById('solarEscalator');
+
+  (function seedMonthlyFromUsage() {
+    const carried = appState.annualUsageKWh ?? getUsageKWh();
+    if (!carried) return;
+    const estRate = 0.14;
+    const estimatedMonthly = Math.round((carried * estRate) / 12 + CONFIG.baseFixedFeeUsd);
+    if (!inputBill.value) inputBill.value = estimatedMonthly;
+    const helper = document.createElement('p');
+    helper.className = 'text-xs text-gray-500 mt-1';
+    helper.textContent = `Estimated from your 12-month usage: about $${estimatedMonthly}/mo (at $${estRate.toFixed(2)}/kWh + $${CONFIG.baseFixedFeeUsd} fixed).`;
+    inputBill.parentElement.appendChild(helper);
+  })();
+
   const resultWrap = document.getElementById('savingsResult');
   const note = document.getElementById('savingsNote');
+  const deadlineNote = document.getElementById('deadlineNote');
+
   const recalcBtn = document.getElementById('recalc');
   const continueBtn = document.getElementById('calcContinue');
   const skipBtn = document.getElementById('skipCalc');
-  const ctx = document.getElementById('savingsChart').getContext('2d');
 
-  let chart;
+  const nearCtx = document.getElementById('nearTermChart').getContext('2d');
+  const longCtx = document.getElementById('savingsChart').getContext('2d');
 
-  function buildAnnotations() {
-    const ann = {};
+  let nearChart, longChart;
 
-    [1, 2, 3].forEach((yr, i) => {
-      ann['inflect_' + yr] = {
-        type: 'line',
-        xMin: yr,
-        xMax: yr,
-        borderColor: 'rgba(44,85,48,0.25)',
-        borderWidth: 2,
-        borderDash: i === 0 ? [] : [4, 4],
-        label: {
-          enabled: true,
-          content: `Y${yr} step`,
-          position: 'start',
-          backgroundColor: 'rgba(44,85,48,0.08)',
-          color: '#2c5530',
-          font: { weight: '600' }
-        }
-      };
-    });
+  function destroyChart(chart) { if (chart) chart.destroy(); }
 
-    [5, 10, 15, 20].forEach(yr => {
-      ann['mark_' + yr] = {
-        type: 'label',
-        xValue: yr,
-        yValue: 0,
-        backgroundColor: 'rgba(0,0,0,0)',
-        content: [`${yr}y`],
-        color: '#6b7280',
-        font: { size: 11 }
-      };
-    });
+  function renderNearTermChart(series) {
+    destroyChart(nearChart);
 
-    return ann;
-  }
+    const deadline = CONFIG.NET_METERING_DEADLINE;
+    const deadlineIndex = series.months.findIndex(d =>
+      d.getFullYear() === deadline.getFullYear() && d.getMonth() === deadline.getMonth()
+    );
 
-  function renderChart(series) {
-    const dataYears = series.years;
-    const dataTrend = series.trend;
-    const dataFlat = series.flat;
-
-    const totalTrend = dataTrend.reduce((a, b) => a + b, 0);
-    const totalFlat = dataFlat.reduce((a, b) => a + b, 0);
-    const delta = totalTrend - totalFlat;
-    note.textContent = `20‑year exposure difference: ${formatCurrency(delta)} (trend vs. flat).`;
-
-    if (chart) chart.destroy();
-
-    chart = new Chart(ctx, {
+    nearChart = new Chart(nearCtx, {
       type: 'line',
       data: {
-        labels: dataYears,
+        labels: series.labels,
+        datasets: [{
+          label: 'Projected utility bill (per month)',
+          data: series.util,
+          fill: 'origin',
+          borderColor: '#2c5530',
+          backgroundColor: 'rgba(44,85,48,0.18)',
+          tension: 0.25,
+          borderWidth: 2,
+          pointRadius: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: { callbacks: { label: tt => `${tt.dataset.label}: ${formatCurrency(tt.parsed.y)}` } },
+          annotation: {
+            annotations: deadlineIndex >= 0 ? {
+              deadline_line: {
+                type: 'line',
+                xMin: deadlineIndex,
+                xMax: deadlineIndex,
+                borderColor: 'rgba(255,145,77,0.8)',
+                borderWidth: 2,
+                label: {
+                  enabled: true,
+                  content: `Net‑metering ends ${deadline.toLocaleDateString()}`,
+                  position: 'start',
+                  backgroundColor: 'rgba(255,145,77,0.12)',
+                  color: '#ff914d',
+                  font: { weight: '600' }
+                }
+              }
+            } : {}
+          }
+        },
+        scales: {
+          y: { title: { display: true, text: 'Monthly Cost ($)' }, beginAtZero: true },
+          x: { title: { display: true, text: 'Month' } }
+        }
+      }
+    });
+
+    deadlineNote.textContent = `Heads up: the program is set to end after ${deadline.toLocaleDateString()}.`;
+  }
+
+  function renderLongTermChart(series) {
+    destroyChart(longChart);
+
+    const { years, trend, flat, solar } = series;
+
+    const totalTrend = trend.reduce((a, b) => a + b, 0);
+    const totalFlat = flat.reduce((a, b) => a + b, 0);
+    const delta = totalTrend - totalFlat;
+    note.textContent = `20‑year exposure difference (trend vs. flat utility): ${formatCurrency(delta)}.`;
+
+    longChart = new Chart(longCtx, {
+      type: 'line',
+      data: {
+        labels: years,
         datasets: [
           {
-            label: 'Current trend',
-            data: dataTrend,
+            label: 'Utility (current trend)',
+            data: trend,
             fill: 'origin',
             borderColor: '#2c5530',
             backgroundColor: 'rgba(44,85,48,0.18)',
             tension: 0.25,
             borderWidth: 2,
-            pointRadius: ctx => {
-              const x = ctx.dataIndex;
-              return (x === 5 || x === 10 || x === 15 || x === 20) ? 4 : 0;
-            },
+            pointRadius: ctx => ([5,10,15,20].includes(ctx.dataIndex) ? 4 : 0),
             pointBackgroundColor: '#2c5530'
           },
           {
-            label: 'Assuming Duke never raises rates again',
-            data: dataFlat,
+            label: 'Utility (never raises rates again)',
+            data: flat,
             fill: true,
             borderColor: '#ff914d',
             backgroundColor: 'rgba(255,145,77,0.15)',
             tension: 0.25,
             borderWidth: 2,
-            pointRadius: ctx => {
-              const x = ctx.dataIndex;
-              return (x === 5 || x === 10 || x === 15 || x === 20) ? 3 : 0;
-            },
+            pointRadius: ctx => ([5,10,15,20].includes(ctx.dataIndex) ? 3 : 0),
             pointBackgroundColor: '#ff914d'
+          },
+          {
+            label: 'Solar payment',
+            data: solar,
+            fill: false,
+            borderColor: '#1d4ed8',
+            backgroundColor: 'rgba(29,78,216,0.12)',
+            tension: 0.15,
+            borderWidth: 2,
+            pointRadius: 0
           }
         ]
       },
@@ -217,51 +383,73 @@ function formatCurrency(v) {
         maintainAspectRatio: false,
         plugins: {
           legend: { position: 'top' },
-          tooltip: {
-            callbacks: {
-              label: tt => `${tt.dataset.label}: ${formatCurrency(tt.parsed.y)} / yr`
-            }
-          },
+          tooltip: { callbacks: { label: tt => `${tt.dataset.label}: ${formatCurrency(tt.parsed.y)} / yr` } },
           annotation: {
-            annotations: buildAnnotations()
+            annotations: {
+              inflect_1: { type: 'line', xMin: 1, xMax: 1, borderColor: 'rgba(44,85,48,0.25)', borderWidth: 2 },
+              inflect_2: { type: 'line', xMin: 2, xMax: 2, borderColor: 'rgba(44,85,48,0.25)', borderWidth: 2, borderDash: [4,4] },
+              inflect_3: { type: 'line', xMin: 3, xMax: 3, borderColor: 'rgba(44,85,48,0.25)', borderWidth: 2, borderDash: [4,4] }
+            }
           }
         },
         scales: {
-          x: {
-            title: { display: true, text: 'Years' },
-            ticks: { callback: v => v }
-          },
-          y: {
-            title: { display: true, text: 'Annual Cost ($)' },
-            beginAtZero: true
-          }
+          x: { title: { display: true, text: 'Years' } },
+          y: { title: { display: true, text: 'Annual Cost ($)' }, beginAtZero: true }
         }
       }
     });
-
-    resultWrap.classList.remove('hidden');
   }
 
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const bill = Number(inputBill.value);
-    if (!bill || bill < 10) return;
-    const series = buildSeries(bill);
-    renderChart(series);
-  });
+  function handleSubmit() {
+    const monthlyInput = Number(inputBill.value);
+    const monthly = inferMonthlyBill({
+      monthlyInput,
+      carriedAnnualKWh: appState.annualUsageKWh ?? getUsageKWh()
+    });
+    if (!monthly) return;
+
+    const today = new Date();
+    let solarStartIndex = 0;
+    if (installMonthInput.value) {
+      const [y, m] = installMonthInput.value.split('-').map(Number);
+      const when = new Date(y, m - 1, 1);
+      const diffMonths = (when.getFullYear() - today.getFullYear()) * 12 + (when.getMonth() - today.getMonth());
+      solarStartIndex = Math.max(0, diffMonths);
+    }
+
+    const useEscalator = !!useEscalatorInput.checked;
+
+    resultWrap.classList.remove('hidden');
+    form.classList.add('hidden');
+
+    const nearSeries = buildNearTermMonthlySeries(monthly, appState.utility, today);
+    renderNearTermChart(nearSeries);
+
+    const longSeries = buildSeriesWithSolar_dateBased(monthly, solarStartIndex, useEscalator, appState.utility);
+    renderLongTermChart(longSeries);
+
+    const assumedMonthlySolar = Math.round(monthly * CONFIG.offsetPct + CONFIG.baseFixedFeeUsd);
+    const totalTrend = longSeries.trend.reduce((a, b) => a + b, 0);
+    const totalFlat = longSeries.flat.reduce((a, b) => a + b, 0);
+    const delta = totalTrend - totalFlat;
+    note.textContent = `Assuming flat solar payment ≈ ${formatCurrency(assumedMonthlySolar)} / month; 20‑yr exposure difference (utility trend vs. utility flat): ${formatCurrency(delta)}.`;
+    note.classList.remove('hidden');
+  }
+
+  form.addEventListener('submit', (e) => { e.preventDefault(); handleSubmit(); });
 
   skipBtn.addEventListener('click', () => {
-    const series = buildSeries(150);
-    renderChart(series);
+    inputBill.value = inputBill.value || 150;
+    handleSubmit();
   });
 
   recalcBtn.addEventListener('click', () => {
     resultWrap.classList.add('hidden');
+    form.classList.remove('hidden');
   });
 
-  continueBtn.addEventListener('click', () => {
-    nextScreen();
-  });
+  continueBtn.addEventListener('click', () => nextScreen());
+
 })();
 
 function showTestimonial(index) {
@@ -301,15 +489,31 @@ function restartQualifier() {
 // Event bindings
 
 document.addEventListener('DOMContentLoaded', () => {
-  progressSun = document.getElementById('progressSun');
   updateProgressBar();
+  const usage3 = document.getElementById('annualUsageKWh');
+  const savedUsage = getUsageKWh();
+  if (usage3) {
+    if (savedUsage && !usage3.value) usage3.value = savedUsage;
+    if (savedUsage) appState.annualUsageKWh = savedUsage;
+    usage3.addEventListener('input', () => {
+      const v = Number(usage3.value);
+      setUsageKWh(Number.isFinite(v) && v > 0 ? v : null);
+    });
+  }
 
   document.getElementById('startBtn').addEventListener('click', nextScreen);
   document.querySelectorAll('.back-btn').forEach(btn => btn.addEventListener('click', prevScreen));
   document.getElementById('restartBtn').addEventListener('click', restartQualifier);
 
   document.getElementById('homeownerForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
-  document.getElementById('qualificationForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
+  document.getElementById('qualificationForm').addEventListener('submit', e => {
+    e.preventDefault();
+    if (usage3) {
+      const v = Number(usage3.value);
+      setUsageKWh(Number.isFinite(v) && v > 0 ? v : null);
+    }
+    nextScreen();
+  });
   document.getElementById('upgradesForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
   document.getElementById('schedulingForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
 
