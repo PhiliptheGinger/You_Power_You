@@ -31,9 +31,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (estimator) {
       estimator.addEventListener("submit", (e) => {
         e.preventDefault();
-        const bill = parseFloat(document.getElementById("bill").value);
+        let bill = parseFloat(document.getElementById("bill").value);
         const zip = document.getElementById("zip").value.trim();
         if (!isNaN(bill) && zip) {
+          // convert annual entries to monthly averages if the value seems too large
+          if (bill > 1000) bill = bill / 12;
           const monthly = bill * 0.25;
           const yearly = monthly * 12;
           const result = document.getElementById("savings-result");

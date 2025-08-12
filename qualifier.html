@@ -48,7 +48,6 @@
         <div class="mb-8 p-4 rounded-2xl bg-white">
             <div class="relative bg-gray-200 rounded-full h-2">
                 <div id="progressBar" class="bg-gradient-to-r from-brandGreen to-brandYellow h-2 rounded-full progress-bar" style="width: 14.3%"></div>
-                <img id="progressSun" src="assets/qualify_assets/house-icon-transparent.png" alt="House icon" class="absolute -top-2 left-0 w-6 h-6 transition-all duration-500">
             </div>
             <div class="text-center mt-2 text-sm text-gray-600">
                 Step <span id="currentStep">1</span> of 7
@@ -129,7 +128,6 @@
                         <div id="check3" class="w-4 h-4 rounded-full bg-gray-300 transition-colors"></div>
                         <div id="check4" class="w-4 h-4 rounded-full bg-gray-300 transition-colors"></div>
                         <div id="check5" class="w-4 h-4 rounded-full bg-gray-300 transition-colors"></div>
-                        <div id="check6" class="w-4 h-4 rounded-full bg-gray-300 transition-colors"></div>
                     </div>
                 </div>
 
@@ -190,7 +188,7 @@
                     <!-- Question 4 -->
                     <fieldset class="qualification-question" id="roof-fieldset">
                         <legend id="roof-label" class="flex items-center mb-3 text-lg font-medium text-gray-700">
-                            Is your roof slated or does it have panels?
+                            Is your roof slatted or panelled?
                             <button type="button" class="ml-2 w-5 h-5 bg-brandOrange text-white rounded-full text-xs flex items-center justify-center tooltip-btn" data-target="roof-tooltip" aria-label="More info about roof type">?</button>
                         </legend>
                         <div id="roof-tooltip" class="tooltip bg-gray-800 text-white p-3 rounded-lg mb-3 text-sm" role="tooltip">
@@ -198,22 +196,22 @@
                             <div class="flex space-x-4">
                                 <div class="text-center">
                                     <div class="w-16 h-12 bg-gray-600 mb-1 rounded"></div>
-                                    <span class="text-xs">Slates</span>
+                                    <span class="text-xs">Slatted</span>
                                 </div>
                                 <div class="text-center">
                                     <div class="w-16 h-12 bg-brandOrange mb-1 rounded"></div>
-                                    <span class="text-xs">Panels</span>
+                                    <span class="text-xs">Panelled</span>
                                 </div>
                             </div>
                         </div>
                         <div class="flex space-x-4" role="radiogroup" aria-labelledby="roof-label">
                             <div class="flex items-center">
-                                <input type="radio" id="roofSlated" name="roof" value="slated">
-                                <label for="roofSlated" class="ml-2">Slated</label>
+                                <input type="radio" id="roofSlatted" name="roof" value="slatted">
+                                <label for="roofSlatted" class="ml-2">Slatted</label>
                             </div>
                             <div class="flex items-center">
-                                <input type="radio" id="roofPanels" name="roof" value="panels">
-                                <label for="roofPanels" class="ml-2">Panels</label>
+                                <input type="radio" id="roofPanelled" name="roof" value="panelled">
+                                <label for="roofPanelled" class="ml-2">Panelled</label>
                             </div>
                         </div>
                     </fieldset>
@@ -230,21 +228,6 @@
                                 <input type="radio" id="billNo" name="electric_bill" value="no">
                                 <label for="billNo" class="ml-2">No</label>
                             </div>
-                        </div>
-                    </fieldset>
-
-                    <!-- Question 6 (NEW): Yearly Usage -->
-                    <fieldset class="qualification-question" id="usage-fieldset">
-                        <legend id="usage-label" class="flex items-center mb-3 text-lg font-medium text-gray-700">
-                            What’s your yearly electricity usage from your last utility statement? (kWh/year)
-                            <button type="button" class="ml-2 w-5 h-5 bg-brandOrange text-white rounded-full text-xs flex items-center justify-center tooltip-btn" data-target="usage-tooltip" aria-label="Where to find yearly usage">?</button>
-                        </legend>
-                        <div id="usage-tooltip" class="tooltip bg-gray-800 text-white p-3 rounded-lg mb-3 text-sm" role="tooltip">
-                            Check your utility’s annual summary or last 12 bills. It’s OK to leave blank if you don’t know yet.
-                        </div>
-                        <div class="max-w-sm">
-                            <input type="number" id="annualUsageKWh" min="100" step="1" placeholder="e.g., 12000" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandOrange focus:border-transparent">
-                            <p class="text-xs text-gray-500 mt-1">Optional, but improves the accuracy of your savings estimate.</p>
                         </div>
                     </fieldset>
 
@@ -265,51 +248,51 @@
                 <form id="upgradesForm">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="insulation" aria-pressed="false">
-                            <img src="assets/qualify_assets/insulation.png" alt="Insulation" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/insulation.png" alt="Insulation" class="w-12 h-12 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Insulation</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="windows" aria-pressed="false">
-                            <img src="assets/qualify_assets/windows.png" alt="Windows" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/windows.png" alt="Windows" class="w-12 h-12 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Windows</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="hvac" aria-pressed="false">
-                            <img src="assets/qualify_assets/hvac.png" alt="HVAC" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/hvac.png" alt="HVAC" class="w-12 h-12 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">HVAC</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="heat_pump" aria-pressed="false">
-                            <img src="assets/qualify_assets/hvac.png" alt="Heat Pump" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/hvac.png" alt="Heat Pump" class="w-12 h-12 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Heat Pump</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="pool" aria-pressed="false">
-                            <img src="assets/qualify_assets/pool.png" alt="Pool" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/pool.png" alt="Pool" class="w-12 h-12 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Pool</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="pool_pump" aria-pressed="false">
-                            <img src="assets/qualify_assets/pool-pump.png" alt="Pool Pump" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/pool-pump.png" alt="Pool Pump" class="w-12 h-12 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Pool Pump</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="thermostat" aria-pressed="false">
-                            <img src="assets/qualify_assets/smart-thermostat.png" alt="Smart Thermostat" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/smart-thermostat.png" alt="Smart Thermostat" class="w-12 h-12 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Smart Thermostat</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="fridge" aria-pressed="false">
-                            <img src="assets/qualify_assets/fridge.png" alt="Fridge" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/fridge.png" alt="Fridge" class="w-12 h-12 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Fridge</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="freezer" aria-pressed="false">
-                            <img src="assets/qualify_assets/freezer.png" alt="Freezer" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/freezer.png" alt="Freezer" class="w-12 h-12 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Freezer</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="led_lights" aria-pressed="false">
-                            <img src="assets/qualify_assets/led-lights.png" alt="LED Lights" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/led-lights.png" alt="LED Lights" class="w-12 h-12 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">LED Lights</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="doors" aria-pressed="false">
-                            <img src="assets/qualify_assets/doors.png" alt="Doors" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/doors.png" alt="Doors" class="w-12 h-12 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Doors</div>
                         </button>
                         <button type="button" class="upgrade-icon text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-brandOrange transition-all" data-upgrade="other" aria-pressed="false">
-                            <img src="assets/qualify_assets/other.png" alt="Other" class="w-8 h-8 object-contain mx-auto mb-2" />
+                            <img src="assets/qualify_assets/other.png" alt="Other" class="w-12 h-12 object-contain mx-auto mb-2" />
                             <div class="text-sm font-medium">Other</div>
                         </button>
                     </div>
@@ -338,10 +321,37 @@
             <form id="savingsForm" class="space-y-4 mb-8">
               <div>
                 <label for="monthlyBill" class="block text-sm font-medium text-gray-700 mb-2">
-                  Average Monthly Electric Bill ($)
+                  Average Monthly Electric Bill ($ or yearly total)
                 </label>
                 <input type="number" id="monthlyBill" required min="10" step="1"
                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandOrange focus:border-transparent">
+              </div>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label for="annualUsageKWh" class="block text-sm font-medium text-gray-700 mb-2">
+                    (Optional) Yearly Usage from your bill (kWh/year)
+                  </label>
+                  <input type="number" id="annualUsageKWh" min="100" step="1"
+                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandOrange focus:border-transparent"
+                         placeholder="e.g., 12000">
+                  <p class="text-xs text-gray-500 mt-1">If provided, we’ll infer your monthly bill.</p>
+                </div>
+
+                <div>
+                  <label for="installMonth" class="block text-sm font-medium text-gray-700 mb-2">
+                    When do you expect to get solar?
+                  </label>
+                  <input type="month" id="installMonth"
+                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandOrange focus:border-transparent">
+                  <p class="text-xs text-gray-500 mt-1">We’ll start the solar line that month.</p>
+                </div>
+              </div>
+
+              <div class="mt-2 flex items-center space-x-3">
+                <input id="solarEscalator" type="checkbox" class="h-4 w-4 rounded border-gray-300">
+                <label for="solarEscalator" class="text-sm text-gray-700">
+                  Use a small solar escalator (2%/yr). Leave unchecked to show a flat solar payment.
+                </label>
               </div>
 
               <div class="flex justify-between pt-4">
@@ -360,18 +370,30 @@
             </form>
 
             <div id="savingsResult" class="hidden">
-              <canvas id="savingsChart" height="220"></canvas>
-              <p id="savingsNote" class="text-center mt-4 text-lg font-semibold text-brandGreen"></p>
-              <p class="text-center mt-1 text-sm text-gray-500 italic">
-                “Assuming Duke <em>never raises rates again</em>” shown as the flat series.
-              </p>
+              <!-- Near-term (month-by-month) chart -->
+              <div class="mt-4">
+                <h3 class="text-lg font-semibold text-gray-800 text-center mb-2">Upcoming Utility Rates (Month‑by‑Month)</h3>
+                <div class="relative h-56 md:h-64">
+                  <canvas id="nearTermChart"></canvas>
+                </div>
+                <p id="deadlineNote" class="text-center mt-2 text-sm text-brandOrange font-medium"></p>
+              </div>
+
+              <!-- Long-term (annual) chart -->
+              <div class="mt-8">
+                <h3 class="text-lg font-semibold text-gray-800 text-center mb-2">20‑Year Cost Exposure</h3>
+                <div class="relative h-56 md:h-64">
+                  <canvas id="savingsChart"></canvas>
+                </div>
+                <p id="savingsNote" class="text-center mt-4 text-lg font-semibold text-brandGreen"></p>
+                <p class="text-center mt-1 text-sm text-gray-500 italic">
+                  “Assuming Duke <em>never raises rates again</em>” shown as the flat series.
+                </p>
+              </div>
+
               <div class="flex justify-between pt-6">
-                <button type="button" id="recalc" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors">
-                  Back
-                </button>
-                <button type="button" id="calcContinue" class="bg-gradient-to-r from-brandGreen to-brandOrange hover:from-brandGreen/90 hover:to-brandOrange/90 text-white font-bold py-3 px-6 rounded-lg transition-all">
-                  Continue
-                </button>
+                <button type="button" id="recalc" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition-colors">Back</button>
+                <button type="button" id="calcContinue" class="bg-gradient-to-r from-brandGreen to-brandOrange hover:from-brandGreen/90 hover:to-brandOrange/90 text-white font-bold py-3 px-6 rounded-lg transition-all">Continue</button>
               </div>
             </div>
           </div>
