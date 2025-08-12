@@ -1,8 +1,6 @@
 let currentScreen = 1;
 let selectedUpgrades = [];
 let currentTestimonial = 0;
-let progressSun;
-let savingsChartInstance = null;
 
 const CONFIG = {
   termYears: 25,
@@ -37,13 +35,6 @@ function updateProgressBar() {
   const bar = document.getElementById('progressBar');
   bar.style.width = progress + '%';
   document.getElementById('currentStep').textContent = currentScreen;
-
-  if (progressSun) {
-    const container = bar.parentElement;
-    const maxLeft = container.offsetWidth - progressSun.offsetWidth;
-    const ratio = (currentScreen - 1) / (totalScreens - 1);
-    progressSun.style.left = maxLeft * ratio + 'px';
-  }
 }
 
 function showTooltip(id) {
@@ -119,6 +110,7 @@ function formatCurrency(v) {
 (function initSavings() {
   const form = document.getElementById('savingsForm');
   const inputBill = document.getElementById('monthlyBill');
+  const usageInput = document.getElementById('annualUsageKWh');
   const resultWrap = document.getElementById('savingsResult');
   const note = document.getElementById('savingsNote');
   const recalcBtn = document.getElementById('recalc');
@@ -175,7 +167,16 @@ function formatCurrency(v) {
     const delta = totalTrend - totalFlat;
     note.textContent = `20‑year exposure difference: ${formatCurrency(delta)} (trend vs. flat).`;
 
-    if (chart) chart.destroy();
+    if (chart) {
+      chart.destroy();
+      const parent = ctx.canvas.parentNode;
+      if (parent && parent.style) parent.style.height = '';
+    }
+
+    // show result container before rendering so Chart.js can size correctly
+    resultWrap.classList.remove('hidden');
+    // hide the form while displaying the chart
+    form.classList.add('hidden');
 
     chart = new Chart(ctx, {
       type: 'line',
@@ -238,17 +239,43 @@ function formatCurrency(v) {
         }
       }
     });
-
-    resultWrap.classList.remove('hidden');
   }
 
   form.addEventListener('submit', e => {
     e.preventDefault();
-    const bill = Number(inputBill.value);
+    let bill = Number(inputBill.value);
+
+    // Infer monthly bill if only yearly usage is provided
+    if ((!bill || bill < 10) && usageInput && usageInput.value) {
+      const kwhYear = Number(usageInput.value);
+      if (kwhYear && kwhYear > 100) {
+        const estRate = 0.14;
+        const monthlyFromKwh = (kwhYear * estRate) / 12 + CONFIG.baseFixedFeeUsd;
+        bill = monthlyFromKwh;
+      }
+    }
+
+    // Normalize annual dollar totals to monthly
+    if (bill > 1000) bill = bill / 12;
+
     if (!bill || bill < 10) return;
+
     const series = buildSeries(bill);
     renderChart(series);
   });
+
+  if (usageInput) {
+    usageInput.addEventListener('blur', () => {
+      if (!inputBill.value && usageInput.value) {
+        const kwhYear = Number(usageInput.value);
+        if (kwhYear > 100) {
+          const estRate = 0.14;
+          const monthlyFromKwh = (kwhYear * estRate) / 12 + CONFIG.baseFixedFeeUsd;
+          inputBill.value = Math.round(monthlyFromKwh);
+        }
+      }
+    });
+  }
 
   skipBtn.addEventListener('click', () => {
     const series = buildSeries(150);
@@ -257,6 +284,7 @@ function formatCurrency(v) {
 
   recalcBtn.addEventListener('click', () => {
     resultWrap.classList.add('hidden');
+    form.classList.remove('hidden');
   });
 
   continueBtn.addEventListener('click', () => {
@@ -301,7 +329,6 @@ function restartQualifier() {
 // Event bindings
 
 document.addEventListener('DOMContentLoaded', () => {
-  progressSun = document.getElementById('progressSun');
   updateProgressBar();
 
   document.getElementById('startBtn').addEventListener('click', nextScreen);
