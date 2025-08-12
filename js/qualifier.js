@@ -352,19 +352,6 @@ function formatCurrency(v) {
 
   form.addEventListener('submit', (e) => { e.preventDefault(); handleSubmit(); });
 
-  if (usageInput) {
-    usageInput.addEventListener('blur', () => {
-      if (!inputBill.value && usageInput.value) {
-        const kwhYear = Number(usageInput.value);
-        if (kwhYear > 100) {
-          const estRate = 0.14;
-          const monthlyFromKwh = (kwhYear * estRate) / 12 + CONFIG.baseFixedFeeUsd;
-          inputBill.value = Math.round(monthlyFromKwh);
-        }
-      }
-    });
-  }
-
   skipBtn.addEventListener('click', () => {
     inputBill.value = inputBill.value || 150;
     handleSubmit();
