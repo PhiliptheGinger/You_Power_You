@@ -5,6 +5,23 @@ let currentTestimonial = 0;
 const appState = {
   annualUsageKWh: null,
   utility: 'DEC'
+};
+
+const STORAGE_KEYS = { usage: 'amp_usage_kwh' };
+
+function setUsageKWh(kwh) {
+  appState.annualUsageKWh = kwh;
+  try {
+    if (kwh) localStorage.setItem(STORAGE_KEYS.usage, String(kwh));
+    else localStorage.removeItem(STORAGE_KEYS.usage);
+  } catch {}
+}
+
+function getUsageKWh() {
+  try {
+    const v = Number(localStorage.getItem(STORAGE_KEYS.usage));
+    return Number.isFinite(v) && v > 0 ? v : null;
+  } catch { return null; }
 }
 
 const CONFIG = {
@@ -226,6 +243,18 @@ function formatCurrency(v) {
   const installMonthInput = document.getElementById('installMonth');
   const useEscalatorInput = document.getElementById('solarEscalator');
 
+  (function seedMonthlyFromUsage() {
+    const carried = appState.annualUsageKWh ?? getUsageKWh();
+    if (!carried) return;
+    const estRate = 0.14;
+    const estimatedMonthly = Math.round((carried * estRate) / 12 + CONFIG.baseFixedFeeUsd);
+    if (!inputBill.value) inputBill.value = estimatedMonthly;
+    const helper = document.createElement('p');
+    helper.className = 'text-xs text-gray-500 mt-1';
+    helper.textContent = `Estimated from your 12-month usage: about $${estimatedMonthly}/mo (at $${estRate.toFixed(2)}/kWh + $${CONFIG.baseFixedFeeUsd} fixed).`;
+    inputBill.parentElement.appendChild(helper);
+  })();
+
   const resultWrap = document.getElementById('savingsResult');
   const note = document.getElementById('savingsNote');
   const deadlineNote = document.getElementById('deadlineNote');
@@ -375,7 +404,7 @@ function formatCurrency(v) {
     const monthlyInput = Number(inputBill.value);
     const monthly = inferMonthlyBill({
       monthlyInput,
-      carriedAnnualKWh: appState.annualUsageKWh
+      carriedAnnualKWh: appState.annualUsageKWh ?? getUsageKWh()
     });
     if (!monthly) return;
 
@@ -462,10 +491,13 @@ function restartQualifier() {
 document.addEventListener('DOMContentLoaded', () => {
   updateProgressBar();
   const usage3 = document.getElementById('annualUsageKWh');
+  const savedUsage = getUsageKWh();
   if (usage3) {
+    if (savedUsage && !usage3.value) usage3.value = savedUsage;
+    if (savedUsage) appState.annualUsageKWh = savedUsage;
     usage3.addEventListener('input', () => {
       const v = Number(usage3.value);
-      appState.annualUsageKWh = Number.isFinite(v) && v > 0 ? v : null;
+      setUsageKWh(Number.isFinite(v) && v > 0 ? v : null);
     });
   }
 
@@ -478,7 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     if (usage3) {
       const v = Number(usage3.value);
-      appState.annualUsageKWh = Number.isFinite(v) && v > 0 ? v : null;
+      setUsageKWh(Number.isFinite(v) && v > 0 ? v : null);
     }
     nextScreen();
   });
