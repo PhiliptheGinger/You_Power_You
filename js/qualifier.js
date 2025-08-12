@@ -144,8 +144,8 @@ function inferMonthlyBill({ monthlyInput, carriedAnnualKWh }) {
   return (bill && bill >= 10) ? bill : null;
 }
 
-// ===== Long-term (annual) series with flat solar comparison =====
-function buildSeriesWithSolar_dateBased(startMonthly, solarStartsAtMonthIndex, utility = 'DEC') {
+// ===== Long-term (annual) series comparing utility trend vs. flat rates =====
+function buildSeries(startMonthly, utility = 'DEC') {
   const hikes = (DUKE_RATE_SCHEDULE[utility] || []).map(h => ({ ym: parseYM(h.effective), pct: h.pct }));
   hikes.sort((a, b) => a.ym - b.ym);
 
@@ -180,9 +180,7 @@ function buildSeriesWithSolar_dateBased(startMonthly, solarStartsAtMonthIndex, u
     cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
   }
 
-  const years = []; const trend = []; const flat = []; const solar = [];
-  const baseMonthlySolar = startMonthly * CONFIG.offsetPct + CONFIG.baseFixedFeeUsd;
-  const solarStartYear = Math.floor(solarStartsAtMonthIndex / 12) + 1;
+  const years = []; const trend = []; const flat = [];
 
   for (let y = 1; y <= HORIZON_YEARS; y++) {
     years.push(y);
@@ -194,15 +192,9 @@ function buildSeriesWithSolar_dateBased(startMonthly, solarStartsAtMonthIndex, u
 
     trend.push(yearTrend);
     flat.push(yearFlat);
-
-    if (y < solarStartYear) {
-      solar.push(null);
-    } else {
-      solar.push(baseMonthlySolar * 12);
-    }
   }
 
-  return { years, trend, flat, solar };
+  return { years, trend, flat };
 }
 
 // ===== Near-term (month-by-month) projection up to deadline (or ~18 months) =====
@@ -252,9 +244,9 @@ function formatCurrency(v) {
   return '$' + Math.round(v).toLocaleString();
 }
 
+
 (function initSavings() {
   const form = document.getElementById('savingsForm');
-  const installMonthInput = document.getElementById('installMonth');
 
   recalcMonthlyFromUsage();
 
@@ -277,6 +269,7 @@ function formatCurrency(v) {
     destroyChart(nearChart);
 
     const deadline = CONFIG.NET_METERING_DEADLINE;
+    const minY = Math.min(...series.util) * 0.9;
     const deadlineIndex = series.months.findIndex(d =>
       d.getFullYear() === deadline.getFullYear() && d.getMonth() === deadline.getMonth()
     );
@@ -323,7 +316,7 @@ function formatCurrency(v) {
           }
         },
         scales: {
-          y: { title: { display: true, text: 'Monthly Cost ($)' }, beginAtZero: true },
+          y: { title: { display: true, text: 'Monthly Cost ($)' }, min: minY },
           x: { title: { display: true, text: 'Month' } }
         }
       }
@@ -335,7 +328,7 @@ function formatCurrency(v) {
   function renderLongTermChart(series) {
     destroyChart(longChart);
 
-    const { years, trend, flat, solar } = series;
+    const { years, trend, flat } = series;
 
     longChart = new Chart(longCtx, {
       type: 'line',
@@ -363,16 +356,6 @@ function formatCurrency(v) {
             borderWidth: 2,
             pointRadius: ctx => ([4,9,14,19].includes(ctx.dataIndex) ? 3 : 0),
             pointBackgroundColor: '#ff914d'
-          },
-          {
-            label: 'Solar payment',
-            data: solar,
-            fill: false,
-            borderColor: '#1d4ed8',
-            backgroundColor: 'rgba(29,78,216,0.12)',
-            tension: 0.15,
-            borderWidth: 2,
-            pointRadius: 0
           }
         ]
       },
@@ -405,13 +388,6 @@ function formatCurrency(v) {
     const monthly = (carried * estRate) / 12 + CONFIG.baseFixedFeeUsd;
 
     const today = new Date();
-    let solarStartIndex = 0;
-    if (installMonthInput.value) {
-      const [y, m] = installMonthInput.value.split('-').map(Number);
-      const when = new Date(y, m - 1, 1);
-      const diffMonths = (when.getFullYear() - today.getFullYear()) * 12 + (when.getMonth() - today.getMonth());
-      solarStartIndex = Math.max(0, diffMonths);
-    }
 
     resultWrap.classList.remove('hidden');
     form.classList.add('hidden');
@@ -419,7 +395,7 @@ function formatCurrency(v) {
     const nearSeries = buildNearTermMonthlySeries(monthly, appState.utility, today);
     renderNearTermChart(nearSeries);
 
-    const longSeries = buildSeriesWithSolar_dateBased(monthly, solarStartIndex, appState.utility);
+    const longSeries = buildSeries(monthly, appState.utility);
     renderLongTermChart(longSeries);
 
     const assumedMonthlySolar = Math.round(monthly * CONFIG.offsetPct + CONFIG.baseFixedFeeUsd);
