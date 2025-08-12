@@ -245,13 +245,18 @@ function formatCurrency(v) {
 
   (function seedMonthlyFromUsage() {
     const carried = appState.annualUsageKWh ?? getUsageKWh();
-    if (!carried) return;
+    if (!carried) return; // Step 3 now required, but guard anyway
     const estRate = 0.14;
-    const estimatedMonthly = Math.round((carried * estRate) / 12 + CONFIG.baseFixedFeeUsd);
-    if (!inputBill.value) inputBill.value = estimatedMonthly;
+    const monthlyFromUsage = Math.round((carried * estRate) / 12 + CONFIG.baseFixedFeeUsd);
+
+    inputBill.value = monthlyFromUsage;
+    inputBill.readOnly = true;
+    inputBill.setAttribute('aria-readonly', 'true');
+    inputBill.classList.add('bg-gray-50');
+
     const helper = document.createElement('p');
     helper.className = 'text-xs text-gray-500 mt-1';
-    helper.textContent = `Estimated from your 12-month usage: about $${estimatedMonthly}/mo (at $${estRate.toFixed(2)}/kWh + $${CONFIG.baseFixedFeeUsd} fixed).`;
+    helper.textContent = `Calculated from your 12-month usage: ~$${monthlyFromUsage}/mo (at $${estRate.toFixed(2)}/kWh + $${CONFIG.baseFixedFeeUsd} fixed).`;
     inputBill.parentElement.appendChild(helper);
   })();
 
@@ -401,12 +406,10 @@ function formatCurrency(v) {
   }
 
   function handleSubmit() {
-    const monthlyInput = Number(inputBill.value);
-    const monthly = inferMonthlyBill({
-      monthlyInput,
-      carriedAnnualKWh: appState.annualUsageKWh ?? getUsageKWh()
-    });
-    if (!monthly) return;
+    const carried = appState.annualUsageKWh ?? getUsageKWh();
+    if (!carried) { showScreen(3); return; }
+    const estRate = 0.14;
+    const monthly = (carried * estRate) / 12 + CONFIG.baseFixedFeeUsd;
 
     const today = new Date();
     let solarStartIndex = 0;
@@ -505,13 +508,17 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.back-btn').forEach(btn => btn.addEventListener('click', prevScreen));
   document.getElementById('restartBtn').addEventListener('click', restartQualifier);
 
-  document.getElementById('homeownerForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
+  document.getElementById('homeownerForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const f = e.currentTarget;
+    if (f.reportValidity()) nextScreen();
+  });
   document.getElementById('qualificationForm').addEventListener('submit', e => {
     e.preventDefault();
-    if (usage3) {
-      const v = Number(usage3.value);
-      setUsageKWh(Number.isFinite(v) && v > 0 ? v : null);
-    }
+    const f = e.currentTarget;
+    if (!f.reportValidity()) return;
+    const v = Number(document.getElementById('annualUsageKWh').value);
+    setUsageKWh(Number.isFinite(v) && v > 0 ? v : null);
     nextScreen();
   });
   document.getElementById('upgradesForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
