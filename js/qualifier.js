@@ -178,6 +178,14 @@ function formatCurrency(v) {
     // hide the form while displaying the chart
     form.classList.add('hidden');
 
+    // show result container before rendering so Chart.js can size correctly
+    resultWrap.classList.remove('hidden');
+    // hide the form while displaying the chart
+    form.classList.add('hidden');
+    // reset canvas height so a previously mis-sized chart doesn't stretch
+    ctx.canvas.height = 220;
+    ctx.canvas.style.height = '220px';
+
     chart = new Chart(ctx, {
       type: 'line',
       data: {
