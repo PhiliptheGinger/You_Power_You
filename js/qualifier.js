@@ -2,6 +2,11 @@ let currentScreen = 1;
 let selectedUpgrades = [];
 let currentTestimonial = 0;
 
+const appState = {
+  annualUsageKWh: null,
+  utility: 'DEC'
+}
+
 const CONFIG = {
   termYears: 25,
   baseFixedFeeUsd: 25,
@@ -72,59 +77,96 @@ function toggleUpgrade(element, upgrade) {
   }
 }
 // ---- Savings Calculator with solar comparison and near‑term projection ----
-const NC_RATE_STEPS = [
-  { year: 1, pct: 0.083 },
-  { year: 2, pct: 0.033 },
-  { year: 3, pct: 0.031 }
-];
-const POST_TREND = 0.03;
+// Duke Energy Carolinas (example schedule — add/adjust as needed)
+const DUKE_RATE_SCHEDULE = {
+  DEC: [
+    { effective: '2025-01', pct: 0.083 },
+    { effective: '2026-01', pct: 0.033 },
+    { effective: '2027-01', pct: 0.031 },
+  ],
+  DEP: []
+};
+
+const POST_TREND = 0.03; // 3%/yr beyond last known hike
 const HORIZON_YEARS = 20;
 
+function ym(date) { return date.getFullYear() * 100 + date.getMonth(); }
+function parseYM(s) { const [Y, M] = s.split('-').map(Number); return (Y * 100) + (M - 1); }
+
 // ===== Monthly bill inference =====
-// Accepts monthly dollars, annual dollars (>1000), or yearly kWh.
-function inferMonthlyBill({ monthlyInput, annualKWh }) {
+// Accepts monthly dollars, annual dollars (>1000), or carried yearly kWh.
+function inferMonthlyBill({ monthlyInput, carriedAnnualKWh }) {
   let bill = Number(monthlyInput);
   if (bill && bill > 1000) bill = bill / 12; // annual $ mistakenly entered
 
-  if ((!bill || bill < 10) && annualKWh && annualKWh > 100) {
+  if ((!bill || bill < 10) && carriedAnnualKWh && carriedAnnualKWh > 100) {
     const estRate = 0.14; // default $/kWh guess
-    bill = (annualKWh * estRate) / 12 + CONFIG.baseFixedFeeUsd;
+    bill = (carriedAnnualKWh * estRate) / 12 + CONFIG.baseFixedFeeUsd;
   }
   return (bill && bill >= 10) ? bill : null;
 }
 
 // ===== Long-term (annual) series with optional solar flat/escalator =====
-function buildSeriesWithSolar(startMonthly, solarStartsAtMonthIndex, useSolarEscalator) {
-  const years = [];
-  const trend = [];
-  const flat = [];
-  const solar = [];
+function buildSeriesWithSolar_dateBased(startMonthly, solarStartsAtMonthIndex, useSolarEscalator, utility = 'DEC') {
+  const hikes = (DUKE_RATE_SCHEDULE[utility] || []).map(h => ({ ym: parseYM(h.effective), pct: h.pct }));
+  hikes.sort((a, b) => a.ym - b.ym);
 
+  const today = new Date();
+  const start = new Date(today.getFullYear(), today.getMonth(), 1);
+  const end = new Date(start.getFullYear() + HORIZON_YEARS, start.getMonth(), 1);
+
+  const months = [];
+  let cur = new Date(start);
   let monthly = startMonthly;
-  const monthsPerYear = 12;
+  let lastHikeIndexApplied = -1;
+
+  const flatMonthly = startMonthly;
+
+  while (cur <= end) {
+    const curYM = ym(cur);
+    for (let i = lastHikeIndexApplied + 1; i < hikes.length; i++) {
+      if (hikes[i].ym === curYM) {
+        monthly *= (1 + hikes[i].pct);
+        lastHikeIndexApplied = i;
+      } else if (hikes[i].ym > curYM) { break; }
+    }
+    if (lastHikeIndexApplied === hikes.length - 1 && hikes.length > 0) {
+      monthly = monthly * Math.pow(1 + POST_TREND, 1/12);
+    }
+
+    months.push({
+      date: new Date(cur),
+      utilityTrendMonthly: monthly,
+      utilityFlatMonthly: flatMonthly
+    });
+
+    cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
+  }
+
+  const years = []; const trend = []; const flat = []; const solar = [];
+  const baseMonthlySolar = startMonthly * CONFIG.offsetPct + CONFIG.baseFixedFeeUsd;
+  const solarStartYear = Math.floor(solarStartsAtMonthIndex / 12);
 
   for (let y = 0; y <= HORIZON_YEARS; y++) {
     years.push(y);
+    const startIdx = y * 12;
+    const endIdx = Math.min(startIdx + 12, months.length);
+    const slice = months.slice(startIdx, endIdx);
 
-    flat.push(startMonthly * 12); // utility flat
+    const yearTrend = slice.reduce((s, m) => s + m.utilityTrendMonthly, 0);
+    const yearFlat = slice.reduce((s, m) => s + m.utilityFlatMonthly, 0);
 
-    if (y > 0) {
-      const step = NC_RATE_STEPS.find(s => s.year === y);
-      if (step) monthly = monthly * (1 + step.pct);
-      else if (y > 3) monthly = monthly * (1 + POST_TREND);
-    }
-    trend.push(monthly * 12);
+    trend.push(yearTrend);
+    flat.push(yearFlat);
 
-    const solarStartYear = Math.floor(solarStartsAtMonthIndex / monthsPerYear);
     if (y < solarStartYear) {
       solar.push(null);
     } else {
-      const yearsSinceStart = y - solarStartYear;
-      const baseMonthlySolar = startMonthly * CONFIG.offsetPct + CONFIG.baseFixedFeeUsd;
-      const appliedMonthlySolar = useSolarEscalator
-        ? baseMonthlySolar * Math.pow(1 + CONFIG.fixedEscalationPct, Math.max(0, yearsSinceStart))
+      const yearsSince = y - solarStartYear;
+      const monthlySolar = useSolarEscalator
+        ? baseMonthlySolar * Math.pow(1 + CONFIG.fixedEscalationPct, Math.max(0, yearsSince))
         : baseMonthlySolar;
-      solar.push(appliedMonthlySolar * 12);
+      solar.push(monthlySolar * 12);
     }
   }
 
@@ -132,10 +174,13 @@ function buildSeriesWithSolar(startMonthly, solarStartsAtMonthIndex, useSolarEsc
 }
 
 // ===== Near-term (month-by-month) projection up to deadline (or ~18 months) =====
-function buildNearTermMonthlySeries(startMonthly, today = new Date()) {
+function buildNearTermMonthlySeries(startMonthly, utility = 'DEC', today = new Date()) {
+  const hikes = (DUKE_RATE_SCHEDULE[utility] || []).map(h => ({ ym: parseYM(h.effective), pct: h.pct }));
+  hikes.sort((a, b) => a.ym - b.ym);
+
+  const labels = [];
   const months = [];
   const util = [];
-  const labels = [];
 
   const start = new Date(today.getFullYear(), today.getMonth(), 1);
   const deadline = CONFIG.NET_METERING_DEADLINE;
@@ -143,18 +188,22 @@ function buildNearTermMonthlySeries(startMonthly, today = new Date()) {
 
   let cur = new Date(start);
   let monthly = startMonthly;
+  let lastHikeIndexApplied = -1;
 
   while (cur <= end) {
-    const monthsSinceStart = (cur.getFullYear() - start.getFullYear()) * 12 + (cur.getMonth() - start.getMonth());
-    const yearIndex = Math.floor(monthsSinceStart / 12);
+    const curYM = ym(cur);
 
-    if (monthsSinceStart > 0) {
-      const step = NC_RATE_STEPS.find(s => s.year === yearIndex);
-      if (step && (monthsSinceStart % 12 === 0)) {
-        monthly = monthly * (1 + step.pct);
-      } else if (yearIndex > 3) {
-        monthly = monthly * Math.pow(1 + POST_TREND, 1 / 12);
+    for (let i = lastHikeIndexApplied + 1; i < hikes.length; i++) {
+      if (hikes[i].ym === curYM) {
+        monthly *= (1 + hikes[i].pct);
+        lastHikeIndexApplied = i;
+      } else if (hikes[i].ym > curYM) {
+        break;
       }
+    }
+
+    if (lastHikeIndexApplied === hikes.length - 1 && hikes.length > 0) {
+      monthly = monthly * Math.pow(1 + POST_TREND, 1/12);
     }
 
     months.push(new Date(cur));
@@ -174,7 +223,6 @@ function formatCurrency(v) {
 (function initSavings() {
   const form = document.getElementById('savingsForm');
   const inputBill = document.getElementById('monthlyBill');
-  const usageInput = document.getElementById('annualUsageKWh');
   const installMonthInput = document.getElementById('installMonth');
   const useEscalatorInput = document.getElementById('solarEscalator');
 
@@ -325,8 +373,10 @@ function formatCurrency(v) {
 
   function handleSubmit() {
     const monthlyInput = Number(inputBill.value);
-    const annualKWh = Number(usageInput.value);
-    const monthly = inferMonthlyBill({ monthlyInput, annualKWh });
+    const monthly = inferMonthlyBill({
+      monthlyInput,
+      carriedAnnualKWh: appState.annualUsageKWh
+    });
     if (!monthly) return;
 
     const today = new Date();
@@ -340,14 +390,21 @@ function formatCurrency(v) {
 
     const useEscalator = !!useEscalatorInput.checked;
 
-    const nearSeries = buildNearTermMonthlySeries(monthly, today);
-    renderNearTermChart(nearSeries);
-
-    const longSeries = buildSeriesWithSolar(monthly, solarStartIndex, useEscalator);
-    renderLongTermChart(longSeries);
-
     resultWrap.classList.remove('hidden');
     form.classList.add('hidden');
+
+    const nearSeries = buildNearTermMonthlySeries(monthly, appState.utility, today);
+    renderNearTermChart(nearSeries);
+
+    const longSeries = buildSeriesWithSolar_dateBased(monthly, solarStartIndex, useEscalator, appState.utility);
+    renderLongTermChart(longSeries);
+
+    const assumedMonthlySolar = Math.round(monthly * CONFIG.offsetPct + CONFIG.baseFixedFeeUsd);
+    const totalTrend = longSeries.trend.reduce((a, b) => a + b, 0);
+    const totalFlat = longSeries.flat.reduce((a, b) => a + b, 0);
+    const delta = totalTrend - totalFlat;
+    note.textContent = `Assuming flat solar payment ≈ ${formatCurrency(assumedMonthlySolar)} / month; 20‑yr exposure difference (utility trend vs. utility flat): ${formatCurrency(delta)}.`;
+    note.classList.remove('hidden');
   }
 
   form.addEventListener('submit', (e) => { e.preventDefault(); handleSubmit(); });
@@ -364,12 +421,6 @@ function formatCurrency(v) {
 
   continueBtn.addEventListener('click', () => nextScreen());
 
-  usageInput.addEventListener('blur', () => {
-    if (!inputBill.value && usageInput.value) {
-      const monthly = inferMonthlyBill({ monthlyInput: null, annualKWh: Number(usageInput.value) });
-      if (monthly) inputBill.value = Math.round(monthly);
-    }
-  });
 })();
 
 function showTestimonial(index) {
@@ -410,13 +461,27 @@ function restartQualifier() {
 
 document.addEventListener('DOMContentLoaded', () => {
   updateProgressBar();
+  const usage3 = document.getElementById('annualUsageKWh');
+  if (usage3) {
+    usage3.addEventListener('input', () => {
+      const v = Number(usage3.value);
+      appState.annualUsageKWh = Number.isFinite(v) && v > 0 ? v : null;
+    });
+  }
 
   document.getElementById('startBtn').addEventListener('click', nextScreen);
   document.querySelectorAll('.back-btn').forEach(btn => btn.addEventListener('click', prevScreen));
   document.getElementById('restartBtn').addEventListener('click', restartQualifier);
 
   document.getElementById('homeownerForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
-  document.getElementById('qualificationForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
+  document.getElementById('qualificationForm').addEventListener('submit', e => {
+    e.preventDefault();
+    if (usage3) {
+      const v = Number(usage3.value);
+      appState.annualUsageKWh = Number.isFinite(v) && v > 0 ? v : null;
+    }
+    nextScreen();
+  });
   document.getElementById('upgradesForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
   document.getElementById('schedulingForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
 
