@@ -11,3 +11,8 @@ Static website for promoting residential solar in Guilford County.
 
 ## Development
 Open `index.html` in a browser to view the site. No build step is required.
+
+## Qualifier Form Backend
+Run `npm start` to launch a small Express server that serves the site and stores
+qualifier form submissions to `data/submissions.json` via the `/api/qualifier`
+endpoint.
