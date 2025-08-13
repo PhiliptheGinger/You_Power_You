@@ -1,6 +1,7 @@
 let currentScreen = 1;
 let selectedUpgrades = [];
 let currentTestimonial = 0;
+const submissionData = {};
 
 const appState = {
   annualUsageKWh: null,
@@ -484,18 +485,59 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('homeownerForm').addEventListener('submit', e => {
     e.preventDefault();
     const f = e.currentTarget;
-    if (f.reportValidity()) nextScreen();
+    if (!f.reportValidity()) return;
+    submissionData.homeownerName1 = document.getElementById('homeownerName1').value;
+    submissionData.homeownerName2 = document.getElementById('homeownerName2').value;
+    submissionData.homeAddress = document.getElementById('homeAddress').value;
+    submissionData.cellPhone = document.getElementById('cellPhone').value;
+    submissionData.emailAddress = document.getElementById('emailAddress').value;
+    nextScreen();
   });
   document.getElementById('qualificationForm').addEventListener('submit', e => {
     e.preventDefault();
     const f = e.currentTarget;
     if (!f.reportValidity()) return;
+    submissionData.homeowner = f.homeowner.value;
+    submissionData.taxes = f.taxes.value;
+    submissionData.credit = f.credit.value;
+    submissionData.roof = f.roof.value;
+    submissionData.statement = f.statement.value;
+    submissionData.annualUsageKWh = document.getElementById('annualUsageKWh').value;
+    submissionData.decision = f.decision.value;
+    submissionData.newroof = f.newroof.value;
+    submissionData.tree_removal = f.tree_removal.value;
     const v = Number(document.getElementById('annualUsageKWh').value);
     setUsageKWh(Number.isFinite(v) && v > 0 ? v : null);
     nextScreen();
   });
-  document.getElementById('upgradesForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
-  document.getElementById('schedulingForm').addEventListener('submit', e => { e.preventDefault(); nextScreen(); });
+  document.getElementById('upgradesForm').addEventListener('submit', e => {
+    e.preventDefault();
+    submissionData.upgrades = [...selectedUpgrades];
+    const other = document.getElementById('otherUpgradeInput');
+    if (other && !other.classList.contains('hidden')) {
+      submissionData.otherUpgrade = other.value;
+    }
+    nextScreen();
+  });
+  document.getElementById('schedulingForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const f = e.currentTarget;
+    if (!f.reportValidity()) return;
+    submissionData.scheduleDate = document.getElementById('scheduleDate').value;
+    submissionData.scheduleTime = document.getElementById('scheduleTime').value;
+    try {
+      await fetch('/api/qualifier', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submissionData)
+      });
+      document.getElementById('thankYouName').textContent = submissionData.homeownerName1 || 'Friend';
+      nextScreen();
+    } catch (err) {
+      console.error('Submission failed', err);
+      alert('There was a problem submitting your info. Please try again later.');
+    }
+  });
 
   document.querySelectorAll('#qualificationForm input[type="radio"]').forEach(input => {
     input.addEventListener('change', updateProgress);
